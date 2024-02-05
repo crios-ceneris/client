@@ -1,19 +1,14 @@
-import React, {useEffect,useState} from 'react';
-import {useNavigate} from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import Axios from "axios";
 import App from "../App.js";
 import './Login.css';
 
-
-
 export default function Login() {
-
     const [nombre, setNombre] = useState("");
     const [password, setPassword] = useState("");
-    const [role, setRole] = useState("");
-    const [LoginStatus, setLoginStatus] = useState("");
+    const [loginStatus, setLoginStatus] = useState("");
     const navigate = useNavigate();
-
 
     const login = () => {
         Axios.post("http://localhost:3001/login", {
@@ -23,46 +18,41 @@ export default function Login() {
             if (response.data.message) {
                 setLoginStatus(response.data.message);
             } else {
-                setLoginStatus(response.data[0].nombre);
-                setRole(response.data[0].role);
-                if (role === "admin") {
+                const user = response.data; // Acceder directamente al objeto
+                setLoginStatus(user.nombre);
+                if (user.rol.toLowerCase() === "admin") { // Acceder a la propiedad 'rol'
                     navigate("/admin");
-                }else{
-                    navigate("/main");
+                } else if(user.rol.toLowerCase() === "supervisor") {
+                    navigate("/supervisor");
+
+                }else if (user.rol.toLowerCase() === "tecnico") {
+                    navigate("/tecnico");
+                }else {
+                    navigate("/general");
                 }
             }
         });
-    }
+    };
 
     useEffect(() => {
         Axios.get("http://localhost:3001/login").then((response) => {
-            if (response.data.loggedIn == true) {
-                setLoginStatus(response.data.user[0].nombre);
+            if (response.data.loggedIn) { // Si es un boolean, no necesita comparación
+                setLoginStatus(response.data.user.nombre); // Acceder a la propiedad 'nombre'
             }
         });
     }, []);
 
-
-    return <div className={App}>
-        <div className="App">
-            <div className="login">
-                <h1>Login</h1>
-                <input type="text" placeholder="Usuario"
-                       onChange={(e) => {
-                           setNombre(e.target.value);
-                       }}
-                />
-                <input type="password" placeholder="Contraseña"
-                       onChange={(e) => {
-                           setPassword(e.target.value);
-                       }}
-                />
-                <button onClick={login}>Ingresar</button>
+    return (
+        <div className={App}>
+            <div className="App">
+                <div className="login">
+                    <h1>Login</h1>
+                    <input type="text" placeholder="Usuario" onChange={(e) => setNombre(e.target.value)} />
+                    <input type="password" placeholder="Contraseña" onChange={(e) => setPassword(e.target.value)} />
+                    <button onClick={login}>Ingresar</button>
+                </div>
+                <h1>{loginStatus}</h1>
             </div>
-
-            <h1>{LoginStatus}</h1>
         </div>
-    </div>
+    );
 }
-
-
