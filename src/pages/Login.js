@@ -1,12 +1,20 @@
 import React, {useEffect,useState} from 'react';
+import {useNavigate} from "react-router-dom";
 import Axios from "axios";
-import App from "../App";
+import App from "../App.js";
+import './Login.css';
+
+
 
 export default function Login() {
 
     const [nombre, setNombre] = useState("");
     const [password, setPassword] = useState("");
+    const [role, setRole] = useState("");
     const [LoginStatus, setLoginStatus] = useState("");
+    const navigate = useNavigate();
+
+
     const login = () => {
         Axios.post("http://localhost:3001/login", {
             nombre: nombre,
@@ -16,6 +24,12 @@ export default function Login() {
                 setLoginStatus(response.data.message);
             } else {
                 setLoginStatus(response.data[0].nombre);
+                setRole(response.data[0].role);
+                if (role === "admin") {
+                    navigate("/admin");
+                }else{
+                    navigate("/main");
+                }
             }
         });
     }
@@ -27,6 +41,7 @@ export default function Login() {
             }
         });
     }, []);
+
 
     return <div className={App}>
         <div className="App">
