@@ -1,58 +1,69 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from "react-router-dom";
+import React, { useState} from 'react';
 import Axios from "axios";
-import App from "../App.js";
-import './Login.css';
+import { useNavigate } from 'react-router-dom';
+import './Login.css'
 
-export default function Login() {
-    const [nombre, setNombre] = useState("");
-    const [password, setPassword] = useState("");
-    const [loginStatus, setLoginStatus] = useState("");
-    const navigate = useNavigate();
+function Login (){
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const navigate = useNavigate()
 
-    const login = () => {
-        Axios.post("http://localhost:3001/login", {
-            nombre: nombre,
-            password: password,
-        }).then((response) => {
-            if (response.data.message) {
-                setLoginStatus(response.data.message);
-            } else {
-                const user = response.data; // Acceder directamente al objeto
-                setLoginStatus(user.nombre);
-                if (user.rol.toLowerCase() === "admin") { // Acceder a la propiedad 'rol'
-                    navigate("/admin");
-                } else if(user.rol.toLowerCase() === "supervisor") {
-                    navigate("/supervisor");
+  const handleLogin = async () => {
+    try {
+      await Axios.post('http://localhost:3001/api/login', { username, password }, { 
+        withCredentials: true 
+      })
+      navigate('/admin')
+      console.log('Inicio de sesión exitoso');
+    } catch (error) {
+      console.error('Error al iniciar sesión:', error);
+      navigate('/')
+    }
+  };
 
-                }else if (user.rol.toLowerCase() === "tecnico") {
-                    navigate("/tecnico");
-                }else {
-                    navigate("/general");
-                }
-            }
-        });
-    };
-
-    useEffect(() => {
-        Axios.get("http://localhost:3001/login").then((response) => {
-            if (response.data.loggedIn) { // Si es un boolean, no necesita comparación
-                setLoginStatus(response.data.user.nombre); // Acceder a la propiedad 'nombre'
-            }
-        });
-    }, []);
-
-    return (
-        <div className={App}>
-            <div className="App">
-                <div className="login">
-                    <h1>Login</h1>
-                    <input type="text" placeholder="Usuario" onChange={(e) => setNombre(e.target.value)} />
-                    <input type="password" placeholder="Contraseña" onChange={(e) => setPassword(e.target.value)} />
-                    <button onClick={login}>Ingresar</button>
-                </div>
-                <h1>{loginStatus}</h1>
+  return (
+    <div className="container">
+      <div className="row align-items-center">
+        <div className="col-md-8">
+          <div className='card-group'>
+            <div className='card p-4'>
+              <div className='card-body'>
+                <h2>Iniciar Sesión</h2>
+                <p className="text-secondary">Ingrese su usuario y contraseña</p>
+                  <div className='input-group mb-3'>
+                    <span className="input-group-text" id="inputGroup-sizing-default"><i className="fa-solid fa-user"></i></span>
+                    <input
+                      type="text"
+                      className="form-control"
+                      aria-label="Sizing example input"
+                      aria-describedby="inputGroup-sizing-default"
+                      value={username} onChange={(e) => setUsername(e.target.value)} />
+                  </div>
+                  <div className='input-group mb-3'>
+                    <span className="input-group-text" id="inputGroup-sizing-default"><i className="fa-solid fa-key"></i></span>
+                    <input
+                      type="password"
+                      className="form-control"
+                      aria-label="Sizing example input"
+                      aria-describedby="inputGroup-sizing-default"
+                      value={password} onChange={(e) => setPassword(e.target.value)} />
+                  </div>
+                  <button className='btn btn-primary rounded-1' onClick={handleLogin}>Iniciar Sesión</button>
+              </div>
             </div>
+            <div className='card text-white bg-black py-5'>
+              <div className='card-body text-center'>
+                <br/>
+                <img className='img-fluid' src='https://ceneris.com/wp-content/uploads/2021/05/logo-ceneris-300.png' alt='Logo'></img>
+                <br/><br/>
+                <p className='fst-italic'> Versión 1.0 </p>
+              </div>
+            </div>
+          </div>
         </div>
-    );
+      </div>
+    </div>
+  )
 }
+
+export default Login
