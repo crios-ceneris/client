@@ -1,8 +1,8 @@
-import React, { useState, useEffect} from 'react';
-import Axios from "axios";
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect} from 'react'
+import Axios from "axios"
+import { useNavigate } from 'react-router-dom'
 
-function Admin() {
+function GestionarUsuarios() {
   const navigate = useNavigate()
   const [isAuthenticated, setIsAuthenticated] = useState(false)
 
@@ -27,10 +27,17 @@ function Admin() {
   }, [navigate])
 
   if (isAuthenticated) {
-    return (
-      <div>
-          <h2>Admin</h2>
-          <p>Contenido de la página protegida.</p>
+    return(
+      <div className='p-2'>
+        {/* Título de la tabla */}
+        <div className='d-grid gap-2'>
+          <div className='p-1 bg-primary rounded-2 text-center text-white fw-medium'>Gestionar Usuarios</div>
+        </div>
+  
+        {/* Tabla con datos */}
+        <div>
+  
+        </div>
       </div>
     )
   } else {
@@ -38,4 +45,4 @@ function Admin() {
   }
 }
 
-export default Admin
+export default GestionarUsuarios
