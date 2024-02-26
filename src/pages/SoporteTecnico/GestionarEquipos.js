@@ -14,12 +14,69 @@ function GestionarEquipos() {
       </div>
 
       {/* Tabla con datos */}
-      <div>
-        <div className='mt-3'>
+      <div className='mt-4'>
+        <div className="input-group w-25 mb-4">
           <button className='btn btn-success' type='button' onClick={handleShow}>Registrar Equipo</button>
         </div>
-
-        {/* Formulario Modal */}
+        <div className='table-responsive'>
+          <table className='table table-bordered text-center table-hover'>
+            <thead className='table-primary'>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Servicio</th>
+                <th scope="col">Cliente</th>
+                <th scope="col">#Guía</th>
+                <th scope="col">Equipo</th>
+                <th scope="col">Marca</th>
+                <th scope="col">Modelo</th>
+                <th scope="col">Serie</th>
+                <th scope="col">Accesorios</th>
+                <th scope="col">Fecha de Recepción</th>
+                <th scope="col">Prioridad</th>
+                <th scope="col">Responsable</th>
+                <th scope="col">Diagnostico</th>
+                <th scope="col">Opciones</th>
+              </tr>
+            </thead>
+            <tbody className="table-group-divider">
+              <tr>
+                <th scope='row'>1</th>
+                <td>Local</td>
+                <td>Ceneris EIRL Proyecto Cerro Verde</td>
+                <td>204</td>
+                <td>Bomba Gravimétrica</td>
+                <td>SKC</td>
+                <td>XR5000</td>
+                <td>86303</td>
+                <td>Sin Accesorios</td>
+                <td>04/01/2024</td>
+                <td>Muy Alta</td>
+                <td>Técnico 1</td>
+                <td>Ver</td>
+                <td>Editar/Eliminar</td>
+              </tr>
+              <tr>
+                <th scope='row'>2</th>
+                <td>Local</td>
+                <td>Ceneris EIRL Proyecto Cerro Verde</td>
+                <td>206</td>
+                <td>Vibrómetro</td>
+                <td>Larson Davis</td>
+                <td>HVM 200</td>
+                <td>0001101</td>
+                <td>SEN027 SN: P208766, SEN 041F SN: SN:P360675</td>
+                <td>28/01/2024</td>
+                <td>Alta</td>
+                <td>Técnico 2</td>
+                <td>Ver</td>
+                <td>Editar/Eliminar</td>
+              </tr>
+            </tbody>     
+          </table>
+        </div>
+      </div>
+      <div>
+        {/* Formulario Modal para Registrar Equipos*/}
         <Modal 
           show={show} 
           onHide={handleClose}
