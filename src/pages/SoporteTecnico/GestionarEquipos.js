@@ -9,8 +9,6 @@ function GestionarEquipos() {
 
   // Estado para almacenar datos de equipos
   const [equipoData, setEquipoData] = useState([]);
-  const [servicioOpciones, setServicioOpciones] = useState([]);
-  const [prioridadOpciones, setPrioridadOpciones] = useState([]);
   const [responsableOpciones, setResponsableOpciones] = useState([]);
 
 
@@ -110,8 +108,6 @@ function GestionarEquipos() {
       const responseResponsable = await fetch('http://localhost:3001/api/responsable');
         const dataResponsable = await responseResponsable.json();
       setEquipoData(data);
-      setServicioOpciones(dataServicios);
-      setPrioridadOpciones(dataPrioridad);
       setResponsableOpciones(dataResponsable);
     } catch (error) {
       console.error(error);
@@ -189,7 +185,7 @@ function GestionarEquipos() {
       </div>
       <div>
         {/* Formulario Modal para Registrar Equipos*/}
-        <Modal show={show} onHide={handleClose}>
+        <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
           <Modal.Header closeButton>
             <Modal.Title>Agregar Equipo</Modal.Title>
           </Modal.Header>
@@ -201,13 +197,10 @@ function GestionarEquipos() {
                     name="servicio"
                     value={newEquipo.servicio}
                     onChange={handleChange}
-
                 >
-                  {servicioOpciones.map((opcion) => (
-                      <option key={opcion.id} value={opcion.id}>
-                        {opcion.servicio}
-                      </option>
-                  ))}
+                  <option value="">Seleccione</option>
+                  <option value="Local">Local</option>
+                  <option value="Tercero">Tercero</option>
                 </Form.Select>
               </Form.Group>
               <Form.Group className="mb-3">
@@ -289,11 +282,10 @@ function GestionarEquipos() {
                     value={newEquipo.prioridad}
                     onChange={handleChange}
                 >
-                  {prioridadOpciones.map((opcion) => (
-                      <option key={opcion.id} value={opcion.id}>
-                        {opcion.prioridad}
-                      </option>
-                  ))}
+                  <option value="">Seleccione</option>
+                  <option value="Muy Alta">Muy Alta</option>
+                  <option valute="Alta">Alta</option>
+                  <option value="Normal">Normal</option>
                 </Form.Select>
               </Form.Group>
               <Form.Group className="mb-3">

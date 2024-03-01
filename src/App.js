@@ -9,13 +9,11 @@ import TablaGestionarEquipos from './DataTables/TablaGestionarEquipos.js';
 
 function App() {
   return(
-    <Router>
-      <Routes>
-        <Route path="/login" element={<Login />}></Route>
-        <Route path='/table' element={<TablaGestionarEquipos/>}></Route>
-        <Route path='/*' element={<NavbarComponent />}></Route>
-      </Routes>
-    </Router>
+    <Routes>
+      <Route path="/login" element={<Login />}></Route>
+      <Route path='/table' element={<TablaGestionarEquipos/>}></Route>
+      <Route path='/*' element={<NavbarComponent />}></Route>
+    </Routes>
   )
 }
 export default App
