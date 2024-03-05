@@ -70,12 +70,23 @@ function GenerarDiagnosticos() {
                   <td>{diagnostic.Marca}</td>
                   <td>{diagnostic.Modelo}</td>
                   <td>{diagnostic.Serie}</td>
-                  <td>{diagnostic.fecharecepcion}</td>
+                  <td>{new Date(diagnostic.fecharecepcion).toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })}</td>
                   <td>{diagnostic.Prioridad}</td>
                   <td>{diagnostic.Responsable}</td>
-                  <td>{diagnostic.fechalimite}</td>
+                  <td>{new Date(diagnostic.fechalimite).toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })}</td>
                   <td>{diagnostic.estadorevision}</td>
-                  <td><button className="btn btn-sm btn-primary" type='button' onClick={handleShow}><i className="fa-solid fa-plus"></i></button></td>
+                  <td>
+                    <button className="btn btn-sm btn-primary" type='button' onClick={handleShow}><i
+                        className="fa-solid fa-plus"></i></button>
+                  </td>
                   <td>
                     {/* Agregar botones para editar, eliminar y ver detalles del diagnóstico */}
                     <button className="btn btn-sm btn-info"><i className="fa-solid fa-pen-to-square"></i></button>
@@ -89,8 +100,8 @@ function GenerarDiagnosticos() {
         </div>
       </div>
 
-      <Modal 
-          show={show} 
+      <Modal
+          show={show}
           size='lg'
           onHide={handleClose}
           backdrop="static"

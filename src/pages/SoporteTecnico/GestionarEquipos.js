@@ -1,11 +1,22 @@
 import React, {useEffect, useState} from 'react'
 import { Button, Modal, Form } from 'react-bootstrap'
+import MUIDataTable from "mui-datatables";
+
 
 function GestionarEquipos() {
+
   // Estados para el modal
   const [show, setShow] = useState(false);
+  const [show2, setShow2] = useState(false);
   const handleClose = () => setShow(false);
+  const handleClose2 = () => {
+    setShow2(false);
+
+  }
+
   const handleShow = () => setShow(true);
+
+  const handleShow2 = () => setShow2(true);
 
   // Estado para almacenar datos de equipos
   const [equipoData, setEquipoData] = useState([]);
@@ -76,6 +87,47 @@ function GestionarEquipos() {
     }
   };
 
+
+  const handleEditEquipo = async (id) => {
+    try {
+      const response = await fetch('http://localhost:3001/api/editar-equipo/${id}', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newEquipo),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        console.log('Equipo editado correctamente');
+        // Actualizar la lista de equipos
+        fetchData();
+        // Cerrar el modal
+        handleClose();
+        // Limpiar el estado del nuevo equipo
+        setNewEquipo({
+          servicio: '',
+          cliente: '',
+          numeroguia: '',
+          serie: '',
+          equipo: '',
+          marca: '',
+          modelo: '',
+          accesorios: '',
+          fecharecepcion: '',
+          prioridad: '',
+          responsable: '',
+        });
+      } else {
+        console.error('Error al agregar equipo:', data.message);
+        // Mostrar un mensaje de error al usuario
+      }
+    } catch (error) {
+      console.error('Error al agregar equipo:', error);
+      // Mostrar un mensaje de error al usuario
+    }
+  };
+
   const handleEliminarEquipo = async (id) => {
     try {
       const response = await fetch(`http://localhost:3001/api/eliminar-equipo/${id}`, {
@@ -86,7 +138,7 @@ function GestionarEquipos() {
       if (data.success) {
         console.log('Equipo eliminado correctamente');
         const nuevaListaEquipos = equipoData.filter(equipo => equipo.id !== id);
-        setEquipoData(nuevaListaEquipos);
+        setEquipoData(nuevaListaEquipos); // Actualiza el estado aquí
       } else {
         console.error('Error al eliminar equipo:', data.message);
       }
@@ -94,7 +146,6 @@ function GestionarEquipos() {
       console.error('Error al eliminar equipo:', error);
     }
   };
-
 
   // Función para obtener datos de equipos
   const fetchData = async () => {
@@ -119,7 +170,6 @@ function GestionarEquipos() {
   useEffect(() => {
     fetchData();
   }, []);
-
 
 
   return(
@@ -166,17 +216,21 @@ function GestionarEquipos() {
                   <td>{equipo.modelo}</td>
                   <td>{equipo.serie}</td>
                   <td>{equipo.accesorios}</td>
-                  <td>{equipo.fecharecepcion}</td>
+                  <td>{new Date(equipo.fecharecepcion).toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })}</td>
                   <td>{equipo.prioridad}</td>
                   <td>{equipo.responsable}</td>
                   <td>
-                    <button className="btn btn-sm btn-primary"><i className="fa-solid fa-eye"></i></button>
+                    <button className="btn btn-sm btn-primary" ><i className="fa-solid fa-eye"></i></button>
                   </td>
-                    <td>
-                      <button className="btn btn-sm btn-info"><i className="fa-solid fa-pen-to-square"></i></button>
-                      <button className="btn btn-sm btn-danger" onClick={() => handleEliminarEquipo(equipo.id)}><i
-                          className="fa-solid fa-trash"></i></button>
-                    </td>
+                  <td>
+                    <button className="btn btn-sm btn-info" type='button' onClick={handleShow2}><i className="fa-solid fa-pen-to-square"></i></button>
+                    <button className="btn btn-sm btn-danger" onClick={() => handleEliminarEquipo(equipo.id)}><i
+                        className="fa-solid fa-trash"></i></button>
+                  </td>
                 </tr>
             ))}
             </tbody>
@@ -191,6 +245,132 @@ function GestionarEquipos() {
           </Modal.Header>
           <Modal.Body>
             <Form onSubmit={handleAddEquipo}>
+              <Form.Group className="mb-3">
+                <Form.Label>Servicio:</Form.Label>
+                <Form.Select
+                    name="servicio"
+                    value={newEquipo.servicio}
+                    onChange={handleChange}
+                >
+                  <option value="">Seleccione</option>
+                  <option value="Local">Local</option>
+                  <option value="Tercero">Tercero</option>
+                </Form.Select>
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label>Cliente:</Form.Label>
+                <Form.Control
+                    type="text"
+                    name="cliente"
+                    value={newEquipo.cliente}
+                    onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label>#Guía:</Form.Label>
+                <Form.Control
+                    type="text"
+                    name="numeroguia"
+                    value={newEquipo.numeroguia}
+                    onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label>Serie:</Form.Label>
+                <Form.Control
+                    type="text"
+                    name="serie"
+                    value={newEquipo.serie}
+                    onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label>Equipo:</Form.Label>
+                <Form.Control
+                    type="text"
+                    name="equipo"
+                    value={newEquipo.equipo}
+                    onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label>Marca:</Form.Label>
+                <Form.Control
+                    type="text"
+                    name="marca"
+                    value={newEquipo.marca}
+                    onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label>Modelo:</Form.Label>
+                <Form.Control
+                    type="text"
+                    name="modelo"
+                    value={newEquipo.modelo}
+                    onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label>Accesorios:</Form.Label>
+                <Form.Control
+                    type="text"
+                    name="accesorios"
+                    value={newEquipo.accesorios}
+                    onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label>Fecha Recepcion:</Form.Label>
+                <Form.Control
+                    type="date"
+                    name="fecharecepcion"
+                    value={newEquipo.fecharecepcion}
+                    onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label>Prioridad:</Form.Label>
+                <Form.Select
+                    name="prioridad"
+                    value={newEquipo.prioridad}
+                    onChange={handleChange}
+                >
+                  <option value="">Seleccione</option>
+                  <option value="Muy Alta">Muy Alta</option>
+                  <option valute="Alta">Alta</option>
+                  <option value="Normal">Normal</option>
+                </Form.Select>
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label>Responsable:</Form.Label>
+                <Form.Select
+                    name="responsable"
+                    value={newEquipo.responsable}
+                    onChange={handleChange}
+                >
+                  {responsableOpciones.map((opcion) => (
+                      <option key={opcion.id} value={opcion.id}>
+                        {opcion.responsable}
+                      </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+
+
+              <Button variant="primary" type="submit">
+                Guardar
+              </Button>
+            </Form>
+          </Modal.Body>
+        </Modal>
+
+        <Modal show={show2} onHide={handleClose2} backdrop="static" keyboard={false}>
+          <Modal.Header closeButton>
+            <Modal.Title>Editar Equipo</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form onSubmit={handleEditEquipo}>
               <Form.Group className="mb-3">
                 <Form.Label>Servicio:</Form.Label>
                 <Form.Select
