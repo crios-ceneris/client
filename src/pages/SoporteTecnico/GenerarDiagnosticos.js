@@ -4,15 +4,20 @@ import { Button, Modal, Form } from 'react-bootstrap';
 function GenerarDiagnosticos() {
   const [show, setShow] = useState(false)
   const handleClose = () => setShow(false)
-  const handleShow = () => setShow(true)
+  const handleShow = (diagnostic) => {
+    setSelectedEquipment(diagnostic);
+    setShow(true);
+  }
 
   const [diagnosticsData, setDiagnosticsData] = useState([]);
   const [username, setUsername] = useState('');
+  const [selectedEquipment, setSelectedEquipment] = useState({});
+
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/diagnostico'); // Reemplaza con la URL de tu backend
+        const response = await fetch('http://localhost:3001/api/equipos'); // Reemplaza con la URL de tu backend
         const data = await response.json();
         const storedUsername = localStorage.getItem('username');
         if (storedUsername) {
@@ -39,7 +44,7 @@ function GenerarDiagnosticos() {
       <div className='mt-4'>
         <div className="input-group w-25 mb-4">
           <span className="input-group-text bg-success text-white">Responsable</span>
-          <input type="text" className="form-control bg-light fw-medium" disabled readOnly/> <td>{username}</td>
+          <input type="text" className="form-control bg-light fw-medium" id="equipo" value={selectedEquipment.equipo}  readOnly/> <td>{username}</td>
         </div>
         <div className='table-responsive'>
           <table className='table text-center'>
@@ -54,7 +59,6 @@ function GenerarDiagnosticos() {
               <th scope="col">Fecha de Recepción</th>
               <th scope="col">Prioridad</th>
               <th scope="col">Responsable</th>
-              <th scope="col">Fecha Límite</th>
               <th scope="col">Estado</th>
               <th scope="col">Diagnóstico</th>
               <th scope="col">Opciones</th>
@@ -65,23 +69,18 @@ function GenerarDiagnosticos() {
             {diagnosticsData.map((diagnostic, index) => (
                 <tr key={index}>
                   <th scope='row'>{index + 1}</th>
-                  <td>{diagnostic.Cliente}</td>
+                  <td>{diagnostic.cliente}</td>
                   <td>{diagnostic.equipo}</td>
-                  <td>{diagnostic.Marca}</td>
-                  <td>{diagnostic.Modelo}</td>
-                  <td>{diagnostic.Serie}</td>
+                  <td>{diagnostic.marca}</td>
+                  <td>{diagnostic.modelo}</td>
+                  <td>{diagnostic.serie}</td>
                   <td>{new Date(diagnostic.fecharecepcion).toLocaleDateString('es-ES', {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric',
                   })}</td>
-                  <td>{diagnostic.Prioridad}</td>
-                  <td>{diagnostic.Responsable}</td>
-                  <td>{new Date(diagnostic.fechalimite).toLocaleDateString('es-ES', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}</td>
+                  <td>{diagnostic.prioridad}</td>
+                  <td>{diagnostic.responsable}</td>
                   <td>{diagnostic.estadorevision}</td>
                   <td>
                     <button className="btn btn-sm btn-primary" type='button' onClick={handleShow}><i

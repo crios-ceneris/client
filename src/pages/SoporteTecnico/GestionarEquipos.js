@@ -16,11 +16,53 @@ function GestionarEquipos() {
 
   const handleShow = () => setShow(true);
 
-  const handleShow2 = () => setShow2(true);
-
+  const handleShow2 = (index) => {
+    const selectedEquipo = equipoData[index];
+    setEquipoEditado(selectedEquipo); // Establecer el equipo que se está editando
+    setEditFormData({  // Establecer editFormData con los valores del equipo seleccionado
+      servicio: selectedEquipo.servicio,
+      cliente: selectedEquipo.cliente,
+      numeroguia: selectedEquipo.numeroguia,
+      equipo: selectedEquipo.equipo,
+      marca: selectedEquipo.marca,
+      modelo: selectedEquipo.modelo,
+      serie: selectedEquipo.serie,
+      accesorios: selectedEquipo.accesorios,
+      fecharecepcion: selectedEquipo.fecharecepcion,
+      prioridad: selectedEquipo.prioridad,
+      responsable: selectedEquipo.responsable,
+    });
+    setShow2(true);
+  };
   // Estado para almacenar datos de equipos
   const [equipoData, setEquipoData] = useState([]);
   const [responsableOpciones, setResponsableOpciones] = useState([]);
+
+  // Estado para el equipo a editar
+  const [equipoEditado, setEquipoEditado] = useState(null);
+
+// Estado para almacenar los cambios realizados en el formulario de edición
+  const [editFormData, setEditFormData] = useState({
+    servicio: '',
+    cliente: '',
+    numeroguia: '',
+    equipo: '',
+    marca: '',
+    modelo: '',
+    serie: '',
+    accesorios: '',
+    fecharecepcion: '',
+    prioridad: '',
+    responsable: '',
+  });
+
+// Función para manejar cambios en el formulario de edición
+  const handleEditFormChange = (event) => {
+    const { name, value } = event.target;
+    setEditFormData({ ...editFormData, [name]: value });
+  };
+
+
 
 
   // Estado para el nuevo equipo
@@ -43,6 +85,8 @@ function GestionarEquipos() {
     const { name, value } = event.target;
     setNewEquipo({ ...newEquipo, [name]: value });
   };
+
+
 
   // Función para enviar datos a la API y agregar equipo
   const handleAddEquipo = async (event) => {
@@ -88,12 +132,12 @@ function GestionarEquipos() {
   };
 
 
-  const handleEditEquipo = async (id) => {
+  const handleEditEquipo = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/editar-equipo/${id}', {
+      const response = await fetch(`http://localhost:3001/api/editar-equipo/${equipoEditado.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newEquipo),
+        body: JSON.stringify(editFormData),
       });
 
       const data = await response.json();
@@ -103,9 +147,10 @@ function GestionarEquipos() {
         // Actualizar la lista de equipos
         fetchData();
         // Cerrar el modal
-        handleClose();
-        // Limpiar el estado del nuevo equipo
-        setNewEquipo({
+        handleClose2();
+        // Limpiar el estado del equipo editado y los datos del formulario de edición
+        setEquipoEditado(null);
+        setEditFormData({
           servicio: '',
           cliente: '',
           numeroguia: '',
@@ -119,11 +164,11 @@ function GestionarEquipos() {
           responsable: '',
         });
       } else {
-        console.error('Error al agregar equipo:', data.message);
+        console.error('Error al editar equipo:', data.message);
         // Mostrar un mensaje de error al usuario
       }
     } catch (error) {
-      console.error('Error al agregar equipo:', error);
+      console.error('Error al editar equipo:', error);
       // Mostrar un mensaje de error al usuario
     }
   };
@@ -137,8 +182,10 @@ function GestionarEquipos() {
 
       if (data.success) {
         console.log('Equipo eliminado correctamente');
+        // Filtrar el equipo eliminado de la lista actual
         const nuevaListaEquipos = equipoData.filter(equipo => equipo.id !== id);
-        setEquipoData(nuevaListaEquipos); // Actualiza el estado aquí
+        // Actualizar el estado equipoData con la nueva lista filtrada
+        setEquipoData(nuevaListaEquipos);
       } else {
         console.error('Error al eliminar equipo:', data.message);
       }
@@ -227,7 +274,9 @@ function GestionarEquipos() {
                     <button className="btn btn-sm btn-primary" ><i className="fa-solid fa-eye"></i></button>
                   </td>
                   <td>
-                    <button className="btn btn-sm btn-info" type='button' onClick={handleShow2}><i className="fa-solid fa-pen-to-square"></i></button>
+                    <button className="btn btn-sm btn-info" type='button' onClick={() => handleShow2(index)}>
+                      <i className="fa-solid fa-pen-to-square"></i>
+                    </button>
                     <button className="btn btn-sm btn-danger" onClick={() => handleEliminarEquipo(equipo.id)}><i
                         className="fa-solid fa-trash"></i></button>
                   </td>
@@ -375,8 +424,8 @@ function GestionarEquipos() {
                 <Form.Label>Servicio:</Form.Label>
                 <Form.Select
                     name="servicio"
-                    value={newEquipo.servicio}
-                    onChange={handleChange}
+                    value={editFormData.servicio}
+                    onChange={handleEditFormChange}
                 >
                   <option value="">Seleccione</option>
                   <option value="Local">Local</option>
@@ -384,12 +433,12 @@ function GestionarEquipos() {
                 </Form.Select>
               </Form.Group>
               <Form.Group className="mb-3">
-                <Form.Label>Cliente:</Form.Label>
+                <Form.Label >Cliente:</Form.Label>
                 <Form.Control
                     type="text"
                     name="cliente"
-                    value={newEquipo.cliente}
-                    onChange={handleChange}
+                    value={editFormData.cliente}
+                    onChange={handleEditFormChange}
                 />
               </Form.Group>
               <Form.Group className="mb-3">
@@ -397,8 +446,8 @@ function GestionarEquipos() {
                 <Form.Control
                     type="text"
                     name="numeroguia"
-                    value={newEquipo.numeroguia}
-                    onChange={handleChange}
+                    value={editFormData.numeroguia}
+                    onChange={handleEditFormChange}
                 />
               </Form.Group>
               <Form.Group className="mb-3">
@@ -406,8 +455,8 @@ function GestionarEquipos() {
                 <Form.Control
                     type="text"
                     name="serie"
-                    value={newEquipo.serie}
-                    onChange={handleChange}
+                    value={editFormData.serie}
+                    onChange={handleEditFormChange}
                 />
               </Form.Group>
               <Form.Group className="mb-3">
@@ -415,8 +464,8 @@ function GestionarEquipos() {
                 <Form.Control
                     type="text"
                     name="equipo"
-                    value={newEquipo.equipo}
-                    onChange={handleChange}
+                    value={editFormData.equipo}
+                    onChange={handleEditFormChange}
                 />
               </Form.Group>
               <Form.Group className="mb-3">
@@ -424,8 +473,8 @@ function GestionarEquipos() {
                 <Form.Control
                     type="text"
                     name="marca"
-                    value={newEquipo.marca}
-                    onChange={handleChange}
+                    value={editFormData.marca}
+                    onChange={handleEditFormChange}
                 />
               </Form.Group>
               <Form.Group className="mb-3">
@@ -433,8 +482,8 @@ function GestionarEquipos() {
                 <Form.Control
                     type="text"
                     name="modelo"
-                    value={newEquipo.modelo}
-                    onChange={handleChange}
+                    value={editFormData.modelo}
+                    onChange={handleEditFormChange}
                 />
               </Form.Group>
               <Form.Group className="mb-3">
@@ -442,8 +491,8 @@ function GestionarEquipos() {
                 <Form.Control
                     type="text"
                     name="accesorios"
-                    value={newEquipo.accesorios}
-                    onChange={handleChange}
+                    value={editFormData.accesorios}
+                    onChange={handleEditFormChange}
                 />
               </Form.Group>
               <Form.Group className="mb-3">
@@ -451,16 +500,16 @@ function GestionarEquipos() {
                 <Form.Control
                     type="date"
                     name="fecharecepcion"
-                    value={newEquipo.fecharecepcion}
-                    onChange={handleChange}
+                    value={editFormData.fecharecepcion}
+                    onChange={handleEditFormChange}
                 />
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>Prioridad:</Form.Label>
                 <Form.Select
                     name="prioridad"
-                    value={newEquipo.prioridad}
-                    onChange={handleChange}
+                    value={editFormData.prioridad}
+                    onChange={handleEditFormChange}
                 >
                   <option value="">Seleccione</option>
                   <option value="Muy Alta">Muy Alta</option>
@@ -472,8 +521,8 @@ function GestionarEquipos() {
                 <Form.Label>Responsable:</Form.Label>
                 <Form.Select
                     name="responsable"
-                    value={newEquipo.responsable}
-                    onChange={handleChange}
+                    value={editFormData.responsable}
+                    onChange={handleEditFormChange}
                 >
                   {responsableOpciones.map((opcion) => (
                       <option key={opcion.id} value={opcion.id}>
@@ -484,7 +533,7 @@ function GestionarEquipos() {
               </Form.Group>
 
 
-              <Button variant="primary" type="submit">
+              <Button variant="primary" type="submit" onClick={handleEditEquipo}>
                 Guardar
               </Button>
             </Form>
