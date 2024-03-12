@@ -1,111 +1,149 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Modal, Form } from 'react-bootstrap';
+import axios from 'axios';
 
 function GenerarDiagnosticos() {
-  const [show, setShow] = useState(false)
-  const handleClose = () => setShow(false)
-  const handleShow = (diagnostic) => {
-    setSelectedEquipment(diagnostic);
-    setShow(true);
-  }
-
-  const [diagnosticsData, setDiagnosticsData] = useState([]);
-  const [username, setUsername] = useState('');
+  const [show, setShow] = useState(false);
   const [selectedEquipment, setSelectedEquipment] = useState({});
-
+  const [username, setUsername] = useState('');
+  const [diagnosticsData, setDiagnosticsData] = useState([]);
+  const [users, setUsers] = useState([]); // Lista de usuarios
+  const [diagnosticData, setDiagnosticData] = useState({
+    idmatrizequipos: '',
+    fecharevision: '',
+    estadorevision: '',
+    diagnostico: '',
+    fechamanufactura: '',
+    ultimacalibracion: '',
+    estadoingreso: '',
+    observaciones: '',
+    idusuariorevisa: ''
+  });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/equipos'); // Reemplaza con la URL de tu backend
+        const response = await fetch('http://localhost:3001/api/equipos');
         const data = await response.json();
         const storedUsername = localStorage.getItem('username');
         if (storedUsername) {
-            setUsername(storedUsername);
+          setUsername(storedUsername);
         }
         setDiagnosticsData(data);
+
+        const responseResponsable = await fetch('http://localhost:3001/api/users');
+        const dataResponsable = await responseResponsable.json();
+        setUsers(dataResponsable);
+
       } catch (error) {
         console.error(error);
-        // Mostrar un mensaje de error al usuario
       }
     };
 
     fetchData();
   }, []);
 
+  const handleClose = () => setShow(false);
+
+  const handleShow = (diagnostic) => {
+    setSelectedEquipment(diagnostic);
+    setShow(true);
+    setDiagnosticData({
+      ...diagnosticData,
+      idmatrizequipos: diagnostic.id // Agrega el ID del equipo al objeto de diagnóstico
+    });
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setDiagnosticData({
+      ...diagnosticData,
+      [name]: value
+    });
+  };
+
+  const handleSave = async () => {
+    try {
+      await axios.post('http://localhost:3001/api/agregar-diagnostico', diagnosticData);
+      console.log('Diagnóstico agregado correctamente');
+      handleClose();
+    } catch (error) {
+      console.error('Error al agregar diagnóstico:', error);
+    }
+  };
+
   return (
-    <div className='p-2'>
-      {/* Título de la tabla */}
-      <div className='d-grid gap-2'>
-        <div className='p-1 bg-primary rounded-2 text-center text-white fw-medium'>Generar Diagnósticos</div>
-      </div>
-
-      {/* Tabla con datos */}
-      <div className='mt-4'>
-        <div className="input-group w-25 mb-4">
-          <span className="input-group-text bg-success text-white">Responsable</span>
-          <input type="text" className="form-control bg-light fw-medium" id="equipo" value={selectedEquipment.equipo}  readOnly/> <td>{username}</td>
+      <div className='p-2'>
+        {/* Tu código para mostrar la tabla de equipos */}
+        <div className='d-grid gap-2'>
+          <div className='p-1 bg-primary rounded-2 text-center text-white fw-medium'>Generar Diagnósticos</div>
         </div>
-        <div className='table-responsive'>
-          <table className='table text-center'>
-            <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Cliente</th>
-              <th scope="col">Equipo</th>
-              <th scope="col">Marca</th>
-              <th scope="col">Modelo</th>
-              <th scope="col">Serie</th>
-              <th scope="col">Fecha de Recepción</th>
-              <th scope="col">Prioridad</th>
-              <th scope="col">Responsable</th>
-              <th scope="col">Estado</th>
-              <th scope="col">Diagnóstico</th>
-              <th scope="col">Opciones</th>
-              <th scope="col">Observaciones</th>
-            </tr>
-            </thead>
-            <tbody>
-            {diagnosticsData.map((diagnostic, index) => (
-                <tr key={index}>
-                  <th scope='row'>{index + 1}</th>
-                  <td>{diagnostic.cliente}</td>
-                  <td>{diagnostic.equipo}</td>
-                  <td>{diagnostic.marca}</td>
-                  <td>{diagnostic.modelo}</td>
-                  <td>{diagnostic.serie}</td>
-                  <td>{new Date(diagnostic.fecharecepcion).toLocaleDateString('es-ES', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}</td>
-                  <td>{diagnostic.prioridad}</td>
-                  <td>{diagnostic.responsable}</td>
-                  <td>{diagnostic.estadorevision}</td>
-                  <td>
-                    <button className="btn btn-sm btn-primary" type='button' onClick={handleShow}><i
-                        className="fa-solid fa-plus"></i></button>
-                  </td>
-                  <td>
-                    {/* Agregar botones para editar, eliminar y ver detalles del diagnóstico */}
-                    <button className="btn btn-sm btn-info"><i className="fa-solid fa-pen-to-square"></i></button>
-                    <button className="btn btn-sm btn-danger"><i className="fa-solid fa-trash"></i></button>
-                  </td>
-                  <td>{diagnostic.Observaciones}</td>
-                </tr>
-            ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
 
-      <Modal
-          show={show}
-          size='lg'
-          onHide={handleClose}
-          backdrop="static"
-          keyboard={false}
-          >
+        <div className='mt-4'>
+          <div className="input-group w-25 mb-4">
+            <span className="input-group-text bg-success text-white">Responsable</span>
+            <input type="text" className="form-control bg-light fw-medium" value={username} readOnly/>
+          </div>
+          <div className='table-responsive'>
+            <table className='table text-center'>
+              <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Cliente</th>
+                <th scope="col">Equipo</th>
+                <th scope="col">Marca</th>
+                <th scope="col">Modelo</th>
+                <th scope="col">Serie</th>
+                <th scope="col">Fecha de Recepción</th>
+                <th scope="col">Prioridad</th>
+                <th scope="col">Responsable</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Diagnóstico</th>
+                <th scope="col">Opciones</th>
+                <th scope="col">Observaciones</th>
+              </tr>
+              </thead>
+              <tbody>
+              {diagnosticsData.map((diagnostic, index) => (
+                  <tr key={index}>
+                    <td>{diagnostic.id}</td>
+                    <td>{diagnostic.cliente}</td>
+                    <td>{diagnostic.equipo}</td>
+                    <td>{diagnostic.marca}</td>
+                    <td>{diagnostic.modelo}</td>
+                    <td>{diagnostic.serie}</td>
+                    <td>{new Date(diagnostic.fecharecepcion).toLocaleDateString('es-ES', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}</td>
+                    <td>{diagnostic.prioridad}</td>
+                    <td>{diagnostic.responsable}</td>
+                    <td>{diagnostic.estadorevision}</td>
+                    <td>
+                      <button className="btn btn-sm btn-primary" onClick={() => handleShow(diagnostic)}>
+                        <i className="fa-solid fa-plus"></i>
+                      </button>
+                    </td>
+                    <td>
+                      <button className="btn btn-sm btn-info"><i className="fa-solid fa-pen-to-square"></i></button>
+                      <button className="btn btn-sm btn-danger"><i className="fa-solid fa-trash"></i></button>
+                    </td>
+                    <td>{diagnostic.Observaciones}</td>
+                  </tr>
+              ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        {/* Modal para generar diagnóstico */}
+        <Modal
+            show={show}
+            size='lg'
+            onHide={handleClose}
+            backdrop="static"
+            keyboard={false}
+        >
           <Modal.Header closeButton>
             <Modal.Title>Generar Diagnóstico</Modal.Title>
           </Modal.Header>
@@ -116,13 +154,13 @@ function GenerarDiagnosticos() {
                 <div className="col-md-6">
                   <div className='input-group mb-3'>
                     <span className="input-group-text" id="numerodiagnostico">Diagnóstico N°</span>
-                    <input type="text" class="form-control" />
+                    <input type="text" className="form-control" name="diagnosticNumber" value={selectedEquipment.id || ''} readOnly />
                   </div>
                 </div>
                 <div className="col-md-6">
                   <div className='input-group mb-3'>
                     <span className="input-group-text" id="fechaRecepcion">Fecha Recepción</span>
-                    <input type="text" class="form-control" />
+                    <input type="text" className="form-control" name="fechaRecepcion" value={selectedEquipment.fecharecepcion ? new Date(selectedEquipment.fecharecepcion).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' }) : ''} readOnly />
                   </div>
                 </div>
               </div>
@@ -130,78 +168,87 @@ function GenerarDiagnosticos() {
               <div className="row">
                 <div className="col-md-6">
                   <div className="form-group">
-                    <label for="equipo">Equipo</label>
-                    <input type="text" className="form-control" id="equipo" />
+                    <label htmlFor="equipo">Equipo</label>
+                    <input type="text" className="form-control" id="equipo" name="equipo" value={selectedEquipment.equipo || ''} readOnly />
                   </div>
-                  <div class="form-group">
-                    <label for="marca">Marca</label>
-                    <input type="text" className="form-control" id="marca"/>
+                  <div className="form-group">
+                    <label htmlFor="marca">Marca</label>
+                    <input type="text" className="form-control" id="marca" name="marca" value={selectedEquipment.marca || ''} readOnly />
                   </div>
-                  <div class="form-group">
-                    <label for="modelo">Modelo</label>
-                    <input type="text" className="form-control" id="modelo"/>
+                  <div className="form-group">
+                    <label htmlFor="modelo">Modelo</label>
+                    <input type="text" className="form-control" id="modelo" name="modelo" value={selectedEquipment.modelo || ''} readOnly />
                   </div>
-                  <div class="form-group">
-                    <label for="serie">Serie</label>
-                    <input type="text" className="form-control" id="serie"/>
+                  <div className="form-group">
+                    <label htmlFor="serie">Serie</label>
+                    <input type="text" className="form-control" id="serie" name="serie" value={selectedEquipment.serie || ''} readOnly />
                   </div>
                 </div>
                 <div className="col-md-6">
                   <div className="form-group">
-                    <label for="accesorios">Accesorios</label>
-                    <textarea className="form-control" id="accesorios" rows="3"></textarea>
+                    <label htmlFor="accesorios">Accesorios</label>
+                    <textarea className="form-control" id="accesorios" name="accesorios" rows="3"></textarea>
                   </div>
                 </div>
               </div>
               <div className="row">
                 <div className="form-group">
-                  <label for="aplicacion">Uso / Aplicación</label>
-                  <input type="text" className="form-control" id="aplicacion"/>
+                  <label htmlFor="aplicacion">Uso / Aplicación</label>
+                  <input type="text" className="form-control" id="aplicacion" name="aplicacion" />
                 </div>
               </div>
               <div className='p-1 mt-2 mb-2 bg-primary rounded-2 text-center text-white'>ESTADO DE INGRESO</div>
               <div className="row">
                 <div className="form-group">
-                  <textarea className="form-control" id="estadoingreso" rows="4"></textarea>
+                  <textarea className="form-control" id="estadoingreso" name="estadoingreso" rows="4"></textarea>
                 </div>
               </div>
               <div className='p-1 mt-2 mb-2 bg-primary rounded-2 text-center text-white'>DIAGNÓSTICO</div>
               <div className="row">
                 <div className="form-group">
-                  <textarea className="form-control" id="diagnostico" rows="4"></textarea>
+                  <textarea className="form-control" id="diagnostico" name="diagnostico" rows="4"></textarea>
                 </div>
               </div>
               <div className="row">
                 <div className="col-md-6">
                   <div className='input-group mb-2 mt-3'>
                     <span className="input-group-text" id="fechaManufactura">Fecha Manufactura</span>
-                    <input type="date" class="form-control" />
+                    <input type="date" className="form-control" />
                   </div>
                 </div>
                 <div className="col-md-6">
                   <div className='input-group mb-2 mt-3'>
                     <span className="input-group-text" id="fechaCalibracion">Fecha Calibración</span>
-                    <input type="date" class="form-control" />
+                    <input type="date" className="form-control" />
                   </div>
                 </div>
               </div>
               <div className='p-1 mt-2 mb-2 bg-primary rounded-2 text-center text-white'>RECOMENDACIONES / OBSERVACIONES</div>
               <div className="row">
                 <div className="form-group">
-                  <textarea className="form-control" id="recomendaciones" rows="4"></textarea>
+                  <textarea className="form-control" id="recomendaciones" name="recomendaciones" rows="4"></textarea>
                 </div>
               </div>
               <div className="row">
                 <div className="col-md-6">
                   <div className='input-group mb-2 mt-3'>
                     <span className="input-group-text" id="fechaRevisión">Fecha Revisión</span>
-                    <input type="date" class="form-control" />
+                    <input type="date" className="form-control" />
                   </div>
                 </div>
                 <div className="col-md-6">
                   <div className='input-group mb-2 mt-3'>
                     <span className="input-group-text" id="realizadoPor">Realizado por:</span>
-                    <input type="text" class="form-control" />
+                    <Form.Select
+                        name="responsable"
+                        onChange={handleChange}
+                    >
+                      {users.map((user) => (
+                          <option key={user.id} value={user.id}>
+                            {user.name} {/* Aquí utilizamos el nombre real del usuario */}
+                          </option>
+                      ))}
+                    </Form.Select>
                   </div>
                 </div>
               </div>
@@ -209,27 +256,29 @@ function GenerarDiagnosticos() {
               <div className="row">
                 <div className="col-md-7">
                   <div className="form-group mb-3">
-                    <input type="text" className="form-control" id="descFig1" placeholder="Descripción Fig. 1:"/>
+                    <input type="text" className="form-control" id="descFig1" placeholder="Descripción Fig. 1:" />
                   </div>
                   <div className="form-group mb-3">
-                    <input type="text" className="form-control" id="descFig2" placeholder="Descripción Fig. 2:"/>
+                    <input type="text" className="form-control" id="descFig2" placeholder="Descripción Fig. 2:" />
                   </div>
                   <div className="form-group mb-3">
-                    <input type="text" className="form-control" id="descFig3" placeholder="Descripción Fig. 3:"/>
+                    <input type="text" className="form-control" id="descFig3" placeholder="Descripción Fig. 3:" />
                   </div>
                 </div>
                 <div className="col-md-5">
                   <div className="form-group mb-3">
-                    <input className="form-control" type="file" id="figura1" placeholder='Figura 1'/>
+                    <input className="form-control" type="file" id="figura1" placeholder='Figura 1' />
                   </div>
                   <div className="form-group mb-3">
-                    <input className="form-control" type="file" id="figura2"/>
+                    <input className="form-control" type="file" id="figura2" />
                   </div>
                   <div className="form-group mb-3">
-                    <input className="form-control" type="file" id="figura3"/>
+                    <input className="form-control" type="file" id="figura3" />
                   </div>
                 </div>
               </div>
+
+
             </Form>
           </Modal.Body>
 
@@ -237,13 +286,12 @@ function GenerarDiagnosticos() {
             <Button variant="danger" onClick={handleClose}>
               Cancelar
             </Button>
-            <Button variant="primary" onClick={handleClose}>
+            <Button variant="primary" onClick={handleSave}>
               Guardar
             </Button>
           </Modal.Footer>
         </Modal>
-
-    </div>
+      </div>
   );
 };
 
