@@ -17,7 +17,16 @@ function GenerarDiagnosticos() {
     ultimacalibracion: '',
     estadoingreso: '',
     observaciones: '',
-    idusuariorevisa: ''
+    idusuariorealiza: '',
+    descripcionfig3: '',
+    descripcionfig2: '',
+    descripcionfig1: '',
+    urlfigura3: '',
+    urlfigura2: '',
+    urlfigura1: '',
+    accesorios: '',
+    usoaplicacion: ''
+
   });
 
   useEffect(() => {
@@ -45,20 +54,36 @@ function GenerarDiagnosticos() {
 
   const handleClose = () => setShow(false);
 
+
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    // Si el nombre del campo es idusuariorealiza, busca el usuario por su nombre y obtén su ID
+    if (name === 'idusuariorealiza') {
+      const selectedUser = users.find(user => user.nombre === value); // Cambiar user.name por user.nombre si es necesario
+      if (selectedUser) {
+        // Si se encuentra el usuario, actualiza el estado con su ID
+        setDiagnosticData({
+          ...diagnosticData,
+          [name]: selectedUser.id
+        });
+      }
+    } else {
+      // Si no es el campo de usuario, simplemente actualiza el estado con el valor
+      setDiagnosticData({
+        ...diagnosticData,
+        [name]: value
+      });
+    }
+  };
+
+
   const handleShow = (diagnostic) => {
     setSelectedEquipment(diagnostic);
     setShow(true);
     setDiagnosticData({
       ...diagnosticData,
       idmatrizequipos: diagnostic.id // Agrega el ID del equipo al objeto de diagnóstico
-    });
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setDiagnosticData({
-      ...diagnosticData,
-      [name]: value
     });
   };
 
@@ -185,67 +210,118 @@ function GenerarDiagnosticos() {
                   </div>
                 </div>
                 <div className="col-md-6">
-                  <div className="form-group">
-                    <label htmlFor="accesorios">Accesorios</label>
-                    <textarea className="form-control" id="accesorios" name="accesorios" rows="3"></textarea>
-                  </div>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Accesorios</Form.Label>
+                    <Form.Control
+                        as="textarea"
+                        rows={3}
+                        placeholder="Ingrese accesorios"
+                        name="accesorios"
+                        value={diagnosticData.accesorios}
+                        onChange={handleChange}
+                    />
+                  </Form.Group>
                 </div>
               </div>
               <div className="row">
-                <div className="form-group">
-                  <label htmlFor="aplicacion">Uso / Aplicación</label>
-                  <input type="text" className="form-control" id="aplicacion" name="aplicacion" />
-                </div>
+                <Form.Group className="mb-3">
+                  <Form.Label>Uso/Aplicacion</Form.Label>
+                  <Form.Control
+                      type="text"
+                      rows={3}
+                      placeholder="Ingrese Uso"
+                      name="usoaplicacion"
+                      value={diagnosticData.usoaplicacion}
+                      onChange={handleChange}
+                  />
+                </Form.Group>
               </div>
               <div className='p-1 mt-2 mb-2 bg-primary rounded-2 text-center text-white'>ESTADO DE INGRESO</div>
               <div className="row">
-                <div className="form-group">
-                  <textarea className="form-control" id="estadoingreso" name="estadoingreso" rows="4"></textarea>
-                </div>
+                <Form.Group className="mb-3">
+                  <Form.Control
+                      as="textarea"
+                      rows={3}
+                      placeholder="Ingrese estado de ingreso"
+                      name="estadoingreso"
+                      value={diagnosticData.estadoingreso}
+                      onChange={handleChange}
+                  />
+                </Form.Group>
               </div>
               <div className='p-1 mt-2 mb-2 bg-primary rounded-2 text-center text-white'>DIAGNÓSTICO</div>
               <div className="row">
-                <div className="form-group">
-                  <textarea className="form-control" id="diagnostico" name="diagnostico" rows="4"></textarea>
-                </div>
+                <Form.Group className="mb-3">
+                  <Form.Control
+                      as="textarea"
+                      rows={3}
+                      placeholder="Ingrese diagnostico"
+                      name="diagnostico"
+                      value={diagnosticData.diagnostico}
+                      onChange={handleChange}
+                  />
+                </Form.Group>
               </div>
               <div className="row">
                 <div className="col-md-6">
                   <div className='input-group mb-2 mt-3'>
                     <span className="input-group-text" id="fechaManufactura">Fecha Manufactura</span>
-                    <input type="date" className="form-control" />
+                    <Form.Control
+                        type="date"
+                        name="fechamanufactura"
+                        value={diagnosticData.fechamanufactura}
+                        onChange={handleChange}
+                    />
                   </div>
                 </div>
                 <div className="col-md-6">
                   <div className='input-group mb-2 mt-3'>
                     <span className="input-group-text" id="fechaCalibracion">Fecha Calibración</span>
-                    <input type="date" className="form-control" />
+                    <Form.Control
+                        type="date"
+                        name="ultimacalibracion"
+                        value={diagnosticData.ultimacalibracion}
+                        onChange={handleChange}
+                    />
                   </div>
                 </div>
               </div>
               <div className='p-1 mt-2 mb-2 bg-primary rounded-2 text-center text-white'>RECOMENDACIONES / OBSERVACIONES</div>
               <div className="row">
-                <div className="form-group">
-                  <textarea className="form-control" id="recomendaciones" name="recomendaciones" rows="4"></textarea>
-                </div>
+                <Form.Group className="mb-3">
+                  <Form.Control
+                      as="textarea"
+                      rows={3}
+                      placeholder="Ingrese observaciones"
+                      name="observaciones"
+                      value={diagnosticData.observaciones}
+                      onChange={handleChange}
+                  />
+                </Form.Group>
               </div>
               <div className="row">
                 <div className="col-md-6">
                   <div className='input-group mb-2 mt-3'>
                     <span className="input-group-text" id="fechaRevisión">Fecha Revisión</span>
-                    <input type="date" className="form-control" />
+                    <Form.Control
+                        type="date"
+                        name="fecharevision"
+                        value={diagnosticData.fecharevision}
+                        onChange={handleChange}
+                    />
                   </div>
                 </div>
                 <div className="col-md-6">
                   <div className='input-group mb-2 mt-3'>
                     <span className="input-group-text" id="realizadoPor">Realizado por:</span>
                     <Form.Select
-                        name="responsable"
+                        name="idusuariorealiza"
+                        value={diagnosticData.idusuariorealiza}
                         onChange={handleChange}
                     >
                       {users.map((user) => (
                           <option key={user.id} value={user.id}>
-                            {user.name} {/* Aquí utilizamos el nombre real del usuario */}
+                            {user.name}
                           </option>
                       ))}
                     </Form.Select>
@@ -255,25 +331,55 @@ function GenerarDiagnosticos() {
               <div className='p-1 mt-2 mb-2 bg-primary rounded-2 text-center text-white'>ADJUNTOS</div>
               <div className="row">
                 <div className="col-md-7">
-                  <div className="form-group mb-3">
-                    <input type="text" className="form-control" id="descFig1" placeholder="Descripción Fig. 1:" />
+                  <div className="row">
+                    <Form.Group className="mb-3">
+                      <Form.Label>Descripcion Fig 1:</Form.Label>
+                      <Form.Control
+                          type="text"
+                          rows={3}
+                          placeholder="Ingrese descripción de la figura 1"
+                          name="descripcionfig1"
+                          value={diagnosticData.descripcionfig1}
+                          onChange={handleChange}
+                      />
+                    </Form.Group>
                   </div>
-                  <div className="form-group mb-3">
-                    <input type="text" className="form-control" id="descFig2" placeholder="Descripción Fig. 2:" />
+                  <div className="row">
+                    <Form.Group className="mb-3">
+                      <Form.Label>Descripcion Fig 2:</Form.Label>
+                      <Form.Control
+                          type="text"
+                          rows={3}
+                          placeholder="Ingrese descripción de la figura 2"
+                          name="descripcionfig2"
+                          value={diagnosticData.descripcionfig2}
+                          onChange={handleChange}
+                      />
+                    </Form.Group>
                   </div>
-                  <div className="form-group mb-3">
-                    <input type="text" className="form-control" id="descFig3" placeholder="Descripción Fig. 3:" />
+                  <div className="row">
+                    <Form.Group className="mb-3">
+                      <Form.Label>Descripcion Fig 3:</Form.Label>
+                      <Form.Control
+                          type="text"
+                          rows={3}
+                          placeholder="Ingrese descripción de la figura 3"
+                          name="descripcionfig3"
+                          value={diagnosticData.descripcionfig3}
+                          onChange={handleChange}
+                      />
+                    </Form.Group>
                   </div>
                 </div>
                 <div className="col-md-5">
                   <div className="form-group mb-3">
-                    <input className="form-control" type="file" id="figura1" placeholder='Figura 1' />
+                    <input className="form-control" type="file" id="figura1" placeholder='Figura 1'/>
                   </div>
                   <div className="form-group mb-3">
-                    <input className="form-control" type="file" id="figura2" />
+                    <input className="form-control" type="file" id="figura2"/>
                   </div>
                   <div className="form-group mb-3">
-                    <input className="form-control" type="file" id="figura3" />
+                    <input className="form-control" type="file" id="figura3"/>
                   </div>
                 </div>
               </div>
