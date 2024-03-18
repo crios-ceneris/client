@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import { Button, Modal, Form } from 'react-bootstrap'
 import MUIDataTable from "mui-datatables";
+import Swal from 'sweetalert2'
 
 
 function GestionarEquipos() {
@@ -173,26 +174,56 @@ function GestionarEquipos() {
     }
   };
 
-  const handleEliminarEquipo = async (id) => {
-    try {
-      const response = await fetch(`http://localhost:3001/api/eliminar-equipo/${id}`, {
-        method: 'DELETE',
-      });
-      const data = await response.json();
+  const handleEliminarEquipo = (id) => {
+    // Mostrar ventana de confirmación
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción no se puede deshacer',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Agregar console.log para verificar el ID del equipo que se va a eliminar
+        console.log('ID del equipo a eliminar:', id);
 
-      if (data.success) {
-        console.log('Equipo eliminado correctamente');
-        // Filtrar el equipo eliminado de la lista actual
-        const nuevaListaEquipos = equipoData.filter(equipo => equipo.id !== id);
-        // Actualizar el estado equipoData con la nueva lista filtrada
-        setEquipoData(nuevaListaEquipos);
-      } else {
-        console.error('Error al eliminar equipo:', data.message);
+        // Eliminar el equipo si el usuario confirma
+        fetch(`http://localhost:3001/api/eliminar-equipo/${id}`, {
+          method: 'DELETE',
+        })
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Hubo un problema al eliminar el equipo');
+              }
+              return response.json();
+            })
+            .then(data => {
+              console.log('Respuesta del servidor:', data);
+              if (data.message === 'Equipo eliminado correctamente') {
+                console.log('Equipo eliminado correctamente');
+                // Actualizar el estado equipoData excluyendo el equipo eliminado
+                setEquipoData(prevEquipoData => prevEquipoData.filter(equipo => equipo.id !== id));
+              } else {
+                console.error('Error al eliminar equipo:', data.message);
+                // Mostrar mensaje de error solo cuando hay un problema al eliminar el equipo
+                Swal.fire('Error', 'Hubo un problema al eliminar el equipo', 'error');
+              }
+            })
+            .catch(error => {
+              console.error('Error al eliminar equipo:', error);
+              // Mostrar un mensaje de error al usuario
+              Swal.fire('Error', 'Hubo un problema al eliminar el equipo', 'error');
+            });
       }
-    } catch (error) {
-      console.error('Error al eliminar equipo:', error);
-    }
+    });
   };
+
+
+
+
 
   // Función para obtener datos de equipos
   const fetchData = async () => {
