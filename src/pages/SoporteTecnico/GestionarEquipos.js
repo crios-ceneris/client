@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react'
 import { Button, Modal, Form } from 'react-bootstrap'
-import MUIDataTable from "mui-datatables";
 import Swal from 'sweetalert2'
 
 
