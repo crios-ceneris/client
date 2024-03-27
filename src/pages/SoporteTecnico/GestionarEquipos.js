@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
-import { Button, Modal, Form } from 'react-bootstrap'
+import { Button, Modal, Form, ModalFooter } from 'react-bootstrap'
 import Swal from 'sweetalert2'
-
+import TablaGestionarEquipos from '../../DataTables/TablaGestionarEquipos.js'
 
 function GestionarEquipos() {
 
@@ -229,10 +229,6 @@ function GestionarEquipos() {
     try {
       const response = await fetch('http://localhost:3001/api/equipos');
       const data = await response.json();
-      const responseServicios = await fetch('http://localhost:3001/api/servicios');
-      const dataServicios = await responseServicios.json();
-      const responsePrioridades = await fetch('http://localhost:3001/api/prioridad');
-      const dataPrioridad = await responsePrioridades.json();
       const responseResponsable = await fetch('http://localhost:3001/api/responsable');
         const dataResponsable = await responseResponsable.json();
       setEquipoData(data);
@@ -316,258 +312,284 @@ function GestionarEquipos() {
           </table>
         </div>
       </div>
-      <div>
-        {/* Formulario Modal para Registrar Equipos*/}
+      
+      <TablaGestionarEquipos/>
+      
+      <div> {/* Formulario Modal para Registrar Equipos*/}
         <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
-          <Modal.Header closeButton>
+          <Modal.Header closeButton className='text-bg-success'>
             <Modal.Title>Agregar Equipo</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <Form onSubmit={handleAddEquipo}>
-              <Form.Group className="mb-3">
-                <Form.Label>Servicio:</Form.Label>
-                <Form.Select
-                    name="servicio"
-                    value={newEquipo.servicio}
-                    onChange={handleChange}
-                >
-                  <option value="">Seleccione</option>
-                  <option value="Local">Local</option>
-                  <option value="Tercero">Tercero</option>
-                </Form.Select>
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Cliente:</Form.Label>
-                <Form.Control
+            <Form className="w-100">
+              <div className="row">
+                <div className="col md-6">
+                  <Form.Group className="mb-3">
+                    <Form.Label>Servicio:</Form.Label>
+                    <Form.Select
+                      name="servicio"
+                      value={newEquipo.servicio}
+                      onChange={handleChange}>
+                      <option value="">Seleccione</option>
+                      <option value="Local">Local</option>
+                      <option value="Tercero">Tercero</option>
+                    </Form.Select>
+                  </Form.Group>
+                </div>
+                <div className="col md-6">
+                  <Form.Group className="mb-3">
+                    <Form.Label>#Guía:</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="numeroguia"
+                      value={newEquipo.numeroguia}
+                      onChange={handleChange}/>
+                  </Form.Group>
+                </div>
+              </div>
+              <div className="row">
+                <Form.Group className="mb-3">
+                  <Form.Label>Cliente:</Form.Label>
+                  <Form.Control
                     type="text"
                     name="cliente"
                     value={newEquipo.cliente}
-                    onChange={handleChange}
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>#Guía:</Form.Label>
-                <Form.Control
-                    type="text"
-                    name="numeroguia"
-                    value={newEquipo.numeroguia}
-                    onChange={handleChange}
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Serie:</Form.Label>
-                <Form.Control
-                    type="text"
-                    name="serie"
-                    value={newEquipo.serie}
-                    onChange={handleChange}
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Equipo:</Form.Label>
-                <Form.Control
-                    type="text"
-                    name="equipo"
-                    value={newEquipo.equipo}
-                    onChange={handleChange}
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Marca:</Form.Label>
-                <Form.Control
-                    type="text"
-                    name="marca"
-                    value={newEquipo.marca}
-                    onChange={handleChange}
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Modelo:</Form.Label>
-                <Form.Control
-                    type="text"
-                    name="modelo"
-                    value={newEquipo.modelo}
-                    onChange={handleChange}
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Accesorios:</Form.Label>
-                <Form.Control
-                    type="text"
+                    onChange={handleChange}/>
+                </Form.Group>
+              </div>
+              <div className="row">
+                <div className="col md-6">
+                  <Form.Group className="mb-3">
+                    <Form.Label>Serie:</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="serie"
+                      value={newEquipo.serie}
+                      onChange={handleChange}/>
+                  </Form.Group>
+                </div>
+                <div className="col md-6">
+                  <Form.Group className="mb-3">
+                    <Form.Label>Marca:</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="marca"
+                      value={newEquipo.marca}
+                      onChange={handleChange}/>
+                  </Form.Group>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col md-6">
+                  <Form.Group className="mb-3">
+                    <Form.Label>Equipo:</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="equipo"
+                      value={newEquipo.equipo}
+                      onChange={handleChange}/>
+                  </Form.Group>
+                </div>
+                <div className="col md-6">
+                  <Form.Group className="mb-3">
+                    <Form.Label>Modelo:</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="modelo"
+                      value={newEquipo.modelo}
+                      onChange={handleChange}/>
+                  </Form.Group>
+                </div>
+              </div>
+              <div className="row">
+                <Form.Group className="mb-3">
+                  <Form.Label>Accesorios:</Form.Label>
+                  <Form.Control
+                    as="textarea"
                     name="accesorios"
                     value={newEquipo.accesorios}
-                    onChange={handleChange}
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Fecha Recepcion:</Form.Label>
-                <Form.Control
-                    type="date"
-                    name="fecharecepcion"
-                    value={newEquipo.fecharecepcion}
-                    onChange={handleChange}
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Prioridad:</Form.Label>
-                <Form.Select
-                    name="prioridad"
-                    value={newEquipo.prioridad}
-                    onChange={handleChange}
-                >
-                  <option value="">Seleccione</option>
-                  <option value="Muy Alta">Muy Alta</option>
-                  <option valute="Alta">Alta</option>
-                  <option value="Normal">Normal</option>
-                </Form.Select>
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Responsable:</Form.Label>
-                <Form.Select
-                    name="responsable"
-                    value={newEquipo.responsable}
-                    onChange={handleChange}
-                >
-                  {responsableOpciones.map((opcion) => (
-                      <option key={opcion.id} value={opcion.id}>
-                        {opcion.responsable}
-                      </option>
-                  ))}
-                </Form.Select>
-              </Form.Group>
-
-
-              <Button variant="primary" type="submit">
-                Guardar
-              </Button>
+                    onChange={handleChange}/>
+                </Form.Group>
+              </div>
+              <div className="row">
+                <div className="col md-6">
+                  <Form.Group className="mb-3">
+                    <Form.Label>Fecha Recepcion:</Form.Label>
+                    <Form.Control type="date" name="fecharecepcion" value={newEquipo.fecharecepcion} onChange={handleChange}/>
+                  </Form.Group>
+                </div>
+                <div className="col md-6">
+                  <Form.Group className="mb-3">
+                    <Form.Label>Prioridad:</Form.Label>
+                    <Form.Select name="prioridad" value={newEquipo.prioridad} onChange={handleChange}>
+                      <option value="">Seleccione</option>
+                      <option value="Muy Alta">Muy Alta</option>
+                      <option value="Alta">Alta</option>
+                      <option value="Normal">Normal</option>
+                    </Form.Select>
+                  </Form.Group>
+                </div>
+                <div className="col md-6">
+                  <Form.Group className="mb-3">
+                    <Form.Label>Responsable:</Form.Label>
+                    <Form.Select name="responsable" value={newEquipo.responsable} onChange={handleChange}>
+                      {responsableOpciones.map((opcion) => (
+                        <option key={opcion.id} value={opcion.id}>
+                          {opcion.responsable}
+                        </option>
+                      ))}
+                    </Form.Select>
+                  </Form.Group>
+                </div>
+              </div>
             </Form>
           </Modal.Body>
+          <ModalFooter>
+            <Button variant="danger" onClick={handleClose}>
+              Cancelar
+            </Button>
+            <Button variant="primary" onClick={handleAddEquipo}>
+              Guardar
+            </Button>
+          </ModalFooter>
         </Modal>
-
+        {/* Formulario Modal para Editar Equipos*/}
         <Modal show={show2} onHide={handleClose2} backdrop="static" keyboard={false}>
-          <Modal.Header closeButton>
+          <Modal.Header closeButton className='text-bg-warning'>
             <Modal.Title>Editar Equipo</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <Form onSubmit={handleEditEquipo}>
-              <Form.Group className="mb-3">
-                <Form.Label>Servicio:</Form.Label>
-                <Form.Select
-                    name="servicio"
-                    value={editFormData.servicio}
-                    onChange={handleEditFormChange}
-                >
-                  <option value="">Seleccione</option>
-                  <option value="Local">Local</option>
-                  <option value="Tercero">Tercero</option>
-                </Form.Select>
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label >Cliente:</Form.Label>
-                <Form.Control
+            <Form className="w-100">
+              <div className="row">
+                <div className="col md-6">
+                  <Form.Group className="mb-3">
+                    <Form.Label>Servicio:</Form.Label>
+                    <Form.Select
+                      name="servicio"
+                      value={editFormData.servicio}
+                      onChange={handleEditFormChange}>
+                      <option value="">Seleccione</option>
+                      <option value="Local">Local</option>
+                      <option value="Tercero">Tercero</option>
+                    </Form.Select>
+                  </Form.Group>
+                </div>
+                <div className="col md-6">
+                  <Form.Group className="mb-3">
+                    <Form.Label>#Guía:</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="numeroguia"
+                      value={editFormData.numeroguia}
+                      onChange={handleEditFormChange}/>
+                  </Form.Group>
+                </div>
+              </div>
+              <div className="row">
+                <Form.Group className="mb-3">
+                  <Form.Label>Cliente:</Form.Label>
+                  <Form.Control
                     type="text"
                     name="cliente"
                     value={editFormData.cliente}
-                    onChange={handleEditFormChange}
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>#Guía:</Form.Label>
-                <Form.Control
-                    type="text"
-                    name="numeroguia"
-                    value={editFormData.numeroguia}
-                    onChange={handleEditFormChange}
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Serie:</Form.Label>
-                <Form.Control
-                    type="text"
-                    name="serie"
-                    value={editFormData.serie}
-                    onChange={handleEditFormChange}
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Equipo:</Form.Label>
-                <Form.Control
-                    type="text"
-                    name="equipo"
-                    value={editFormData.equipo}
-                    onChange={handleEditFormChange}
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Marca:</Form.Label>
-                <Form.Control
-                    type="text"
-                    name="marca"
-                    value={editFormData.marca}
-                    onChange={handleEditFormChange}
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Modelo:</Form.Label>
-                <Form.Control
-                    type="text"
-                    name="modelo"
-                    value={editFormData.modelo}
-                    onChange={handleEditFormChange}
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Accesorios:</Form.Label>
-                <Form.Control
-                    type="text"
+                    onChange={handleEditFormChange}/>
+                </Form.Group>
+              </div>
+              <div className="row">
+                <div className="col md-6">
+                  <Form.Group className="mb-3">
+                    <Form.Label>Serie:</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="serie"
+                      value={editFormData.serie}
+                      onChange={handleEditFormChange}/>
+                  </Form.Group>
+                </div>
+                <div className="col md-6">
+                  <Form.Group className="mb-3">
+                    <Form.Label>Marca:</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="marca"
+                      value={editFormData.marca}
+                      onChange={handleEditFormChange}/>
+                  </Form.Group>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col md-6">
+                  <Form.Group className="mb-3">
+                    <Form.Label>Equipo:</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="equipo"
+                      value={editFormData.equipo}
+                      onChange={handleEditFormChange}/>
+                  </Form.Group>
+                </div>
+                <div className="col md-6">
+                  <Form.Group className="mb-3">
+                    <Form.Label>Modelo:</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="modelo"
+                      value={editFormData.modelo}
+                      onChange={handleEditFormChange}/>
+                  </Form.Group>
+                </div>
+              </div>
+              <div className="row">
+                <Form.Group className="mb-3">
+                  <Form.Label>Accesorios:</Form.Label>
+                  <Form.Control
+                    as="textarea"
                     name="accesorios"
                     value={editFormData.accesorios}
-                    onChange={handleEditFormChange}
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Fecha Recepcion:</Form.Label>
-                <Form.Control
-                    type="date"
-                    name="fecharecepcion"
-                    value={editFormData.fecharecepcion}
-                    onChange={handleEditFormChange}
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Prioridad:</Form.Label>
-                <Form.Select
-                    name="prioridad"
-                    value={editFormData.prioridad}
-                    onChange={handleEditFormChange}
-                >
-                  <option value="">Seleccione</option>
-                  <option value="Muy Alta">Muy Alta</option>
-                  <option valute="Alta">Alta</option>
-                  <option value="Normal">Normal</option>
-                </Form.Select>
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Responsable:</Form.Label>
-                <Form.Select
-                    name="responsable"
-                    value={editFormData.responsable}
-                    onChange={handleEditFormChange}
-                >
-                  {responsableOpciones.map((opcion) => (
-                      <option key={opcion.id} value={opcion.id}>
-                        {opcion.responsable}
-                      </option>
-                  ))}
-                </Form.Select>
-              </Form.Group>
-
-
-              <Button variant="primary" type="submit" onClick={handleEditEquipo}>
-                Guardar
-              </Button>
+                    onChange={handleEditFormChange}/>
+                </Form.Group>
+              </div>
+              <div className="row">
+                <div className="col md-6">
+                  <Form.Group className="mb-3">
+                    <Form.Label>Fecha Recepcion:</Form.Label>
+                    <Form.Control type="date" name="fecharecepcion" value={editFormData.fecharecepcion} onChange={handleEditFormChange}/>
+                  </Form.Group>
+                </div>
+                <div className="col md-6">
+                  <Form.Group className="mb-3">
+                    <Form.Label>Prioridad:</Form.Label>
+                    <Form.Select name="prioridad" value={editFormData.prioridad} onChange={handleEditFormChange}>
+                      <option value="">Seleccione</option>
+                      <option value="Muy Alta">Muy Alta</option>
+                      <option value="Alta">Alta</option>
+                      <option value="Normal">Normal</option>
+                    </Form.Select>
+                  </Form.Group>
+                </div>
+                <div className="col md-6">
+                  <Form.Group className="mb-3">
+                    <Form.Label>Responsable:</Form.Label>
+                    <Form.Select name="responsable" value={editFormData.responsable} onChange={handleEditFormChange}>
+                      {responsableOpciones.map((opcion) => (
+                        <option key={opcion.id} value={opcion.id}>
+                          {opcion.responsable}
+                        </option>
+                      ))}
+                    </Form.Select>
+                  </Form.Group>
+                </div>
+              </div>
             </Form>
           </Modal.Body>
+          <ModalFooter>
+            <Button variant="danger" onClick={handleClose}>
+              Cancelar
+            </Button>
+            <Button variant="primary" onClick={handleEditEquipo}>
+              Guardar
+            </Button>
+          </ModalFooter>
         </Modal>
       </div>
     </div>
