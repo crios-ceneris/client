@@ -1,23 +1,82 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import { Button, Modal, Form } from 'react-bootstrap'
 import DataTable from "react-data-table-component"
 import Axios from "axios"
+import Swal from 'sweetalert2'
 
 function TablaGestionarEquipos() {
   const [show, setShow] = useState(false)
+  const [rowData, setRowData] = useState({})
   const handleShow = () => setShow(true)
   const handleClose = () => setShow(false)
+  const handleEdit = (event) => {
+    const row = parseInt(event.currentTarget.dataset.row, 10)
+    const rowData = data.find((item) => item.id === row)
+    setRowData(rowData)
+    handleShow()
+  }
+
+  const handleDelete = (event) => {
+    const rowId = parseInt(event.currentTarget.dataset.row, 10)
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción no se puede deshacer',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const response = Axios.post(`http://localhost:3001/eliminar-equipo/${rowId}`)
+        .then((response) => {
+          console.log("Fila eliminada con éxito!")
+        })
+        // Eliminar el equipo si el usuario confirma
+        /*fetch(`http://localhost:3001/api/eliminar-equipo/${rowId}`, {
+          method: 'DELETE',
+        })
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Hubo un problema al eliminar el equipo');
+              }
+              return response.json();
+            })
+            .then(data => {
+              console.log('Respuesta del servidor:', data);
+              if (data.message === 'Equipo eliminado correctamente') {
+                console.log('Equipo eliminado correctamente');
+                // Actualizar el estado equipoData excluyendo el equipo eliminado
+                setEquipoData(prevEquipoData => prevEquipoData.filter(equipo => equipo.id !== id));
+              } else {
+                console.error('Error al eliminar equipo:', data.message);
+                // Mostrar mensaje de error solo cuando hay un problema al eliminar el equipo
+                Swal.fire('Error', 'Hubo un problema al eliminar el equipo', 'error');
+              }
+            })
+            .catch(error => {
+              console.error('Error al eliminar equipo:', error);
+              // Mostrar un mensaje de error al usuario
+              Swal.fire('Error', 'Hubo un problema al eliminar el equipo', 'error');
+            });*/
+      }
+    });
+  };
+
   const columns = [
     {
-      name: '#',
+      name: 'ID',
       selector: row => row.id,
       width: '50px',
       wrap: true,
+      sortable: true,
+      reorder: true,
     },
     {
       name: 'Servicio',
       selector: row => row.servicio,
-      width: '100px',
+      width: '90px',
       wrap: true,
     },
     {
@@ -85,10 +144,9 @@ function TablaGestionarEquipos() {
       name: 'Opciones',
       cell:(row) => (
         <div>
-          <button className="btn btn-info btn-sm" onClick={handleShow}><i className="fa-regular fa-pen-to-square"></i></button>
-          <button className="btn btn-danger btn-sm"><i className="fa-solid fa-trash"></i></button>
+          <button className="btn btn-info btn-sm" data-row={row.id} onClick={(event) => handleEdit(event)}><i className="fa-regular fa-pen-to-square"></i></button>
+          <button className="btn btn-danger btn-sm" data-row={row.id} onClick={(event) => handleDelete(event)}><i className="fa-solid fa-trash"></i></button>
         </div>
-        
       )
     },
   ];
@@ -97,7 +155,6 @@ function TablaGestionarEquipos() {
     headRow:{
       style: {
         justifyContent: "center",
-        padding: "0 5px 0 5px",
       }
     },
     headCells:{
@@ -124,6 +181,7 @@ function TablaGestionarEquipos() {
   const[data, setData] = useState([])
   const[search, setSearch] = useState('')
   const[filter, setFilter] = useState([])
+  const[dataUsers, setDataUsers] =  useState([])
 
   const handleSearch = (e) => {
     const searchText = e.target.value
@@ -142,17 +200,75 @@ function TablaGestionarEquipos() {
     }
   }
 
-  useEffect(() =>{
-    const fetchData = async() => {
-      try {
-        const result = await Axios.get('http://localhost:3001/api/equipos')
-        setData(result.data)
-        setFilter(result.data)
-      } catch (error) {
-        console.error('Error al obtener datos', error)
+  const handleSave = async() => {
+    try {
+      const editRowData = await Axios.put(`http://localhost:3001/api/editar-equipo/${rowData.id}`,{
+        servicio: rowData.servicio,
+        numeroguia: rowData.numeroguia,
+        cliente: rowData.cliente,
+        serie: rowData.serie,
+        marca: rowData.marca,
+        equipo: rowData.equipo,
+        modelo: rowData.modelo,
+        accesorios: rowData.accesorios,
+        fecharecepcion: rowData.fecharecepcion,
+        prioridad: rowData.prioridad,
+        responsable: rowData.responsable,
+      })
+      if (editRowData.status === 200) {
+        handleClose()
+        Swal.fire({
+          position: "top-center",
+          icon: "success",
+          title: "Los cambios se han guardado",
+          showConfirmButton: false,
+          timer: 1500
+        })
+        fetchData()
+        setRowData(rowData)
       }
+      else {
+        Swal.fire({
+          position: "top-center",
+          icon: "warning",
+          title: "No ha sido posible guardar los cambios",
+          showConfirmButton: false,
+          timer: 1000
+        })
+      }
+    } catch (error) {
+      Swal.fire({
+        position: "top-center",
+        icon: "errow",
+        title: "Oops... ocurrio un error!",
+        showConfirmButton: false,
+        timer: 1000
+      })
+      console.error('Error al guardar los cambios: ', error)
     }
+  }
+
+  const fetchData = async() => {
+    try {
+      const backData = await Axios.get('http://localhost:3001/api/obtener-equipos')
+      setData(backData.data)
+      setFilter(backData.data)
+    } catch (error) {
+      console.error('Error al obtener datos', error)
+    }
+  }
+  const fetchUserData = async() => {
+    try {
+      const dataUsers = await Axios.get('http://localhost:3001/api/users-names-data')
+      setDataUsers(dataUsers.data)
+    } catch (error) {
+      console.error('Error al obtener usuarios', error)
+    }
+  }
+
+  useEffect(() =>{
     fetchData()
+    fetchUserData()
   }, [])
 
   return(
@@ -172,8 +288,9 @@ function TablaGestionarEquipos() {
           onChange={handleSearch}/>
         }/>
 
+      {/* MODAL PARA EDITAR EQUIPO */}
       <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
-          <Modal.Header closeButton>
+          <Modal.Header closeButton className='text-bg-warning'>
             <Modal.Title>Editar Equipo</Modal.Title>
           </Modal.Header>
           <Modal.Body>
@@ -183,7 +300,12 @@ function TablaGestionarEquipos() {
                   <Form.Group className="mb-3">
                     <Form.Label>Servicio:</Form.Label>
                     <Form.Select
-                        name="servicio">
+                        name="servicio"
+                        value={rowData.servicio}
+                        onChange={(e) => setRowData((prevState) => ({
+                          ...prevState,
+                          servicio: e.target.value,
+                        }))}>
                       <option value="">Seleccione</option>
                       <option value="Local">Local</option>
                       <option value="Tercero">Tercero</option>
@@ -195,7 +317,12 @@ function TablaGestionarEquipos() {
                     <Form.Label>#Guía:</Form.Label>
                     <Form.Control
                         type="text"
-                        name="numeroguia"/>
+                        name="numeroguia"
+                        value={rowData.numeroguia}
+                        onChange={(e) => setRowData((prevState) => ({
+                          ...prevState,
+                          numeroguia: e.target.value,
+                        }))}/>
                   </Form.Group>
                 </div>
               </div>
@@ -204,7 +331,12 @@ function TablaGestionarEquipos() {
                   <Form.Label>Cliente:</Form.Label>
                   <Form.Control
                       type="text"
-                      name="cliente"/>
+                      name="cliente"
+                      value={rowData.cliente}
+                      onChange={(e) => setRowData((prevState) => ({
+                        ...prevState,
+                        cliente: e.target.value,
+                      }))}/>
                 </Form.Group>
               </div>
               <div className="row">
@@ -213,7 +345,12 @@ function TablaGestionarEquipos() {
                     <Form.Label>Serie:</Form.Label>
                     <Form.Control
                         type="text"
-                        name="serie"/>
+                        name="serie"
+                        value={rowData.serie}
+                        onChange={(e) => setRowData((prevState) => ({
+                          ...prevState,
+                          serie: e.target.value,
+                        }))}/>
                   </Form.Group>
                 </div>
                 <div className="col md-6">
@@ -221,7 +358,12 @@ function TablaGestionarEquipos() {
                     <Form.Label>Marca:</Form.Label>
                     <Form.Control
                         type="text"
-                        name="marca"/>
+                        name="marca"
+                        value={rowData.marca}
+                        onChange={(e) => setRowData((prevState) => ({
+                          ...prevState,
+                          marca: e.target.value,
+                        }))}/>
                   </Form.Group>
                 </div>
               </div>
@@ -231,7 +373,12 @@ function TablaGestionarEquipos() {
                     <Form.Label>Equipo:</Form.Label>
                     <Form.Control
                         type="text"
-                        name="equipo"/>
+                        name="equipo"
+                        value={rowData.equipo}
+                        onChange={(e) => setRowData((prevState) => ({
+                          ...prevState,
+                          equipo: e.target.value,
+                        }))}/>
                   </Form.Group>
                 </div>
                 <div className="col md-6">
@@ -239,7 +386,12 @@ function TablaGestionarEquipos() {
                     <Form.Label>Modelo:</Form.Label>
                     <Form.Control
                         type="text"
-                        name="modelo"/>
+                        name="modelo"
+                        value={rowData.modelo}
+                        onChange={(e) => setRowData((prevState) => ({
+                          ...prevState,
+                          modelo: e.target.value,
+                        }))}/>
                   </Form.Group>
                 </div>
               </div>
@@ -248,21 +400,36 @@ function TablaGestionarEquipos() {
                   <Form.Label>Accesorios:</Form.Label>
                   <Form.Control
                       as="textarea"
-                      name="accesorios"/>
+                      name="accesorios"
+                      value={rowData.accesorios}
+                      onChange={(e) => setRowData((prevState) => ({
+                        ...prevState,
+                        accesorios: e.target.value,
+                      }))}/>
                 </Form.Group>
               </div>
               <div className="row">
                 <div className="col md-6">
                   <Form.Group className="mb-3">
                   <Form.Label>Fecha Recepcion:</Form.Label>
-                  <Form.Control type="date"/>
+                  <Form.Control type="date"
+                    value={rowData.fecharecepcion}
+                    onChange={(e) => setRowData((prevState) => ({
+                      ...prevState,
+                      fecharecepcion: e.target.value,
+                    }))}/>
                 </Form.Group>
                 </div>
                 <div className="col md-6">
                 <Form.Group className="mb-3">
                   <Form.Label>Prioridad:</Form.Label>
                   <Form.Select
-                      name="prioridad">
+                      name="prioridad"
+                      value={rowData.prioridad}
+                      onChange={(e) => setRowData((prevState) => ({
+                        ...prevState,
+                        prioridad: e.target.value,
+                      }))}>
                     <option value="">Seleccione</option>
                     <option value="Muy Alta">Muy Alta</option>
                     <option valute="Alta">Alta</option>
@@ -274,7 +441,16 @@ function TablaGestionarEquipos() {
                 <Form.Group className="mb-3">
                   <Form.Label>Responsable:</Form.Label>
                   <Form.Select
-                      name="responsable">
+                      name="responsable"
+                      value={rowData.responsable}
+                      onChange={(e) => setRowData((prevState) => ({
+                        ...prevState,
+                        responsable: e.target.value,
+                      }))}>
+                      <option value="">Seleccione</option>
+                      {dataUsers.map(item => (
+                        <option value={item}>{item}</option>
+                      ))}
                   </Form.Select>
                 </Form.Group>
                 </div>
@@ -285,7 +461,7 @@ function TablaGestionarEquipos() {
             <Button variant="danger" onClick={handleClose}>
               Cancelar
             </Button>
-            <Button variant="primary" type="submit">
+            <Button variant="primary" type="submit" onClick={handleSave}>
               Guardar
             </Button>
           </Modal.Footer>

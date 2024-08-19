@@ -11,12 +11,12 @@ function GestionarEquipos() {
   const handleClose = () => setShow(false);
   const handleClose2 = () => {
     setShow2(false);
-
   }
 
   const handleShow = () => setShow(true);
 
   const handleShow2 = (index) => {
+    console.log(equipoData);
     const selectedEquipo = equipoData[index];
     setEquipoEditado(selectedEquipo); // Establecer el equipo que se está editando
     setEditFormData({  // Establecer editFormData con los valores del equipo seleccionado
@@ -257,6 +257,7 @@ function GestionarEquipos() {
         <div className="input-group w-25 mb-4">
           <button className='btn btn-success' type='button' onClick={handleShow}>Registrar Equipo</button>
         </div>
+        {/* Tabla con datos 
         <div className='table-responsive'>
           <table className='table table-bordered text-center table-hover'>
             <thead className='table-primary'>
@@ -310,8 +311,8 @@ function GestionarEquipos() {
             ))}
             </tbody>
           </table>
-        </div>
-      </div>
+        </div>*/}
+      </div> 
       
       <TablaGestionarEquipos/>
       
@@ -433,6 +434,7 @@ function GestionarEquipos() {
                   <Form.Group className="mb-3">
                     <Form.Label>Responsable:</Form.Label>
                     <Form.Select name="responsable" value={newEquipo.responsable} onChange={handleChange}>
+                      <option value="">Seleccione</option>
                       {responsableOpciones.map((opcion) => (
                         <option key={opcion.id} value={opcion.id}>
                           {opcion.responsable}
@@ -583,7 +585,7 @@ function GestionarEquipos() {
             </Form>
           </Modal.Body>
           <ModalFooter>
-            <Button variant="danger" onClick={handleClose}>
+            <Button variant="danger" onClick={handleClose2}>
               Cancelar
             </Button>
             <Button variant="primary" onClick={handleEditEquipo}>

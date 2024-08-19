@@ -361,15 +361,13 @@ function GenerarDiagnosticos() {
                         value={diagnosticData.idusuariorealiza || ''}
                         onChange={handleUserChange}
                     >
-                      <option value="">Seleccionar usuario</option>
+                      <option value="">Seleccionar</option>
                       {users.map((user) => (
                           <option key={user.id} value={user.id}>
                             {user.name}
                           </option>
                       ))}
                     </Form.Select>
-
-
                   </div>
                 </div>
               </div>
@@ -378,7 +376,6 @@ function GenerarDiagnosticos() {
                 <div className="col-md-7">
                   <div className="row">
                     <Form.Group className="mb-3">
-                      <Form.Label>Descripcion Fig 1:</Form.Label>
                       <Form.Control
                           type="text"
                           rows={3}
@@ -391,7 +388,6 @@ function GenerarDiagnosticos() {
                   </div>
                   <div className="row">
                     <Form.Group className="mb-3">
-                      <Form.Label>Descripcion Fig 2:</Form.Label>
                       <Form.Control
                           type="text"
                           rows={3}
@@ -404,7 +400,6 @@ function GenerarDiagnosticos() {
                   </div>
                   <div className="row">
                     <Form.Group className="mb-3">
-                      <Form.Label>Descripcion Fig 3:</Form.Label>
                       <Form.Control
                           type="text"
                           rows={3}
@@ -428,8 +423,6 @@ function GenerarDiagnosticos() {
                   </div>
                 </div>
               </div>
-
-
             </Form>
           </Modal.Body>
 
@@ -601,15 +594,13 @@ function GenerarDiagnosticos() {
                         value={diagnosticData.idusuariorealiza || ''}
                         onChange={handleUserChange}
                     >
-                      <option value="">Seleccionar usuario</option>
+                      <option value="">Seleccionar</option>
                       {users.map((user) => (
                           <option key={user.id} value={user.id}>
                             {user.name}
                           </option>
                       ))}
                     </Form.Select>
-
-
                   </div>
                 </div>
               </div>
@@ -618,7 +609,6 @@ function GenerarDiagnosticos() {
                 <div className="col-md-7">
                   <div className="row">
                     <Form.Group className="mb-3">
-                      <Form.Label>Descripcion Fig 1:</Form.Label>
                       <Form.Control
                           type="text"
                           rows={3}
@@ -631,7 +621,6 @@ function GenerarDiagnosticos() {
                   </div>
                   <div className="row">
                     <Form.Group className="mb-3">
-                      <Form.Label>Descripcion Fig 2:</Form.Label>
                       <Form.Control
                           type="text"
                           rows={3}
@@ -644,7 +633,6 @@ function GenerarDiagnosticos() {
                   </div>
                   <div className="row">
                     <Form.Group className="mb-3">
-                      <Form.Label>Descripcion Fig 3:</Form.Label>
                       <Form.Control
                           type="text"
                           rows={3}
