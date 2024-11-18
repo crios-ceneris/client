@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
 import Axios from "axios"
 import CompRoutes from './CompRoutes.js'
+import { Navbar, Nav, Accordion, Container } from 'react-bootstrap'
 
 function NavbarComponent() {
   const navigate = useNavigate()
@@ -51,14 +52,64 @@ function NavbarComponent() {
     }
     fetchData()
   }, [navigate])
+  
   if(isAuthenticated){
     return (
+      /*<div style={{ display: 'grid', gridTemplateColumns: '15% 85%', height: '100vh' }}>
+        <Navbar bg="white" expand="lg" className="flex-column" style={{ width: '250px' }}>
+          <Container className="flex-column">
+            <Accordion defaultActiveKey="">
+              <Accordion.Item eventKey="0">
+                <Accordion.Header>Soporte Técnico</Accordion.Header>
+                <Accordion.Body>
+                  <Nav className="flex-column">
+                    <Nav.Link onClick={() => handleClick('/gestionar-equipos')}>Gestionar Equipos</Nav.Link>
+                    <Nav.Link onClick={() => handleClick('/generar-diagnosticos')}>Generar Diagnósticos</Nav.Link>
+                    <Nav.Link onClick={() => handleClick('/revisar-diagnosticos')}>Revisar Diagnósticos</Nav.Link>
+                  </Nav>
+                </Accordion.Body>
+              </Accordion.Item>
+              <Accordion.Item eventKey="1">
+                <Accordion.Header>Almacén</Accordion.Header>
+                <Accordion.Body>
+                  <Nav className="flex-column">
+                    <Nav.Link onClick={() => handleClick('/gestionar-almacen')}>Gestionar Almacén</Nav.Link>
+                  </Nav>
+                </Accordion.Body>
+              </Accordion.Item>
+              <Accordion.Item eventKey="2">
+                <Accordion.Header>Administrador</Accordion.Header>
+                <Accordion.Body>
+                  <Nav className="flex-column">
+                    <Nav.Link onClick={() => handleClick('/gestionar-usuarios')}>Gestionar Usuarios</Nav.Link>
+                  </Nav>
+                </Accordion.Body>
+              </Accordion.Item>
+            </Accordion>
+            <button className="btn btn-danger mt-2" onClick={handleLogout}><i className="fa-solid fa-power-off"></i> Cerrar Sesión</button>
+          </Container>
+        </Navbar>
+        <div className='p-3'>
+          <CompRoutes />
+        </div>
+      </div>*/
+
+
       <div style={{ 
         display: 'grid', 
         gridTemplateColumns: '15% 85%', 
         height: '100vh'}}>
         <div className='d-flex flex-column'>
-          <nav className="navbar bg-white" style={{ height: '60px' }}>
+          <div className="navbar bg-white fixed-top" style={{ height: '60px' }}>
+            <div className="container-fluid d-flex justify-content-between align-items-center">
+              <img className='logo' src='https://ceneris.com/wp-content/uploads/2021/05/logo-ceneris-300.png' width="8%" height="auto" alt='Logo' />
+              <button className="btn btn-danger" type="button" onClick={handleLogout}>
+                <i className="fa-solid fa-power-off"></i>
+              </button>
+            </div>
+          </div>
+          
+          {/*<nav className="navbar bg-white" style={{ height: '60px' }}>
             <div className="container-fluid">
               <img className='position-absolute top-50 start-50 translate-middle'
                 src='https://ceneris.com/wp-content/uploads/2021/05/logo-ceneris-300.png'
@@ -66,7 +117,7 @@ function NavbarComponent() {
                 height="auto"
                 alt='Logo'/>
             </div>
-          </nav>
+          </nav>*/}
           
           <div className="h-100 bg-white border-end">
             <ul className='list-group list-group-flush'>
@@ -107,14 +158,13 @@ function NavbarComponent() {
             </ul>
           </div>
         </div>
-    
+  
         <div className='d-flex flex-column'>
           <nav className="navbar bg-white">
             <button
               className="btn btn-danger"
               type="button"
-              onClick={handleLogout}>
-                Cerrar Sesión
+              onClick={handleLogout}><i className="fa-solid fa-power-off"></i>
             </button>
           </nav>
           <div className='p-3'>
