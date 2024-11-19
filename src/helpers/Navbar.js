@@ -4,10 +4,12 @@ import Swal from 'sweetalert2'
 import Axios from "axios"
 import CompRoutes from './CompRoutes.js'
 import { Navbar, Nav, Accordion, Container } from 'react-bootstrap'
+import whiteLogo from '../images/cen_white-wp.webp'
 
 function NavbarComponent() {
   const navigate = useNavigate()
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isMenuCollapsed, setIsMenuCollapsed] = useState(false)
   const handleLogout = async () => {
     try {
       Swal.fire({
@@ -52,124 +54,77 @@ function NavbarComponent() {
     }
     fetchData()
   }, [navigate])
+
+  const toggleMenu = () => {
+    setIsMenuCollapsed(!isMenuCollapsed)
+  }
   
   if(isAuthenticated){
     return (
-      /*<div style={{ display: 'grid', gridTemplateColumns: '15% 85%', height: '100vh' }}>
-        <Navbar bg="white" expand="lg" className="flex-column" style={{ width: '250px' }}>
-          <Container className="flex-column">
-            <Accordion defaultActiveKey="">
-              <Accordion.Item eventKey="0">
-                <Accordion.Header>Soporte Técnico</Accordion.Header>
-                <Accordion.Body>
-                  <Nav className="flex-column">
-                    <Nav.Link onClick={() => handleClick('/gestionar-equipos')}>Gestionar Equipos</Nav.Link>
-                    <Nav.Link onClick={() => handleClick('/generar-diagnosticos')}>Generar Diagnósticos</Nav.Link>
-                    <Nav.Link onClick={() => handleClick('/revisar-diagnosticos')}>Revisar Diagnósticos</Nav.Link>
-                  </Nav>
-                </Accordion.Body>
-              </Accordion.Item>
-              <Accordion.Item eventKey="1">
-                <Accordion.Header>Almacén</Accordion.Header>
-                <Accordion.Body>
-                  <Nav className="flex-column">
-                    <Nav.Link onClick={() => handleClick('/gestionar-almacen')}>Gestionar Almacén</Nav.Link>
-                  </Nav>
-                </Accordion.Body>
-              </Accordion.Item>
-              <Accordion.Item eventKey="2">
-                <Accordion.Header>Administrador</Accordion.Header>
-                <Accordion.Body>
-                  <Nav className="flex-column">
-                    <Nav.Link onClick={() => handleClick('/gestionar-usuarios')}>Gestionar Usuarios</Nav.Link>
-                  </Nav>
-                </Accordion.Body>
-              </Accordion.Item>
-            </Accordion>
-            <button className="btn btn-danger mt-2" onClick={handleLogout}><i className="fa-solid fa-power-off"></i> Cerrar Sesión</button>
-          </Container>
-        </Navbar>
-        <div className='p-3'>
-          <CompRoutes />
-        </div>
-      </div>*/
-
-
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: '15% 85%', 
-        height: '100vh'}}>
-        <div className='d-flex flex-column'>
-          <div className="navbar bg-white fixed-top" style={{ height: '60px' }}>
+      <div className='container m-0' style={{maxWidth: 'none'}}>
+        <div className='row'>
+          <div className='col-2 bg-dark p-3'>
             <div className="container-fluid d-flex justify-content-between align-items-center">
-              <img className='logo' src='https://ceneris.com/wp-content/uploads/2021/05/logo-ceneris-300.png' width="8%" height="auto" alt='Logo' />
+              <img className='logo' src={whiteLogo} width="80%" height="auto" alt='Logo' />
+            </div>
+            <div className='d-flex flex-column'>
+              <div className="">
+                <ul className='list-group list-group-flush'>
+                  <li className='list-group-item bg-dark text-white' 
+                      data-bs-toggle="collapse" 
+                      href='#collapseSoporte' 
+                      role='button'>Soporte Técnico</li>
+                    <ul className='list-group-flush collapse' id='collapseSoporte'>
+                      <li 
+                        className='list-group-item bg-dark text-white' 
+                        role='button'
+                        onClick={() => handleClick('/gestionar-equipos')}
+                      >Gestionar Equipos</li>
+                      <li 
+                        className='list-group-item bg-dark text-white'
+                        role='button'
+                        onClick={() => handleClick('/generar-diagnosticos')}
+                      >Generar Diagnósticos</li>
+                      <li 
+                        className='list-group-item bg-dark text-white'
+                        role='button'
+                        onClick={() => handleClick('/revisar-diagnosticos')}
+                      >Revisar Diagnósticos</li>
+                    </ul>
+                  <li className='list-group-item bg-dark text-white' 
+                      data-bs-toggle="collapse" 
+                      href='#collapseAlmacen' 
+                      role='button'>Almacén</li>
+                    <ul className='list-group-flush collapse' id='collapseAlmacen'>
+                      <li 
+                        className='list-group-item bg-dark text-white'
+                        role='button'
+                        onClick={() => handleClick('/gestionar-almacen')}
+                      >Gestionar Almacén</li>
+                    </ul>
+                  <li className='list-group-item bg-dark text-white' 
+                      data-bs-toggle="collapse" 
+                      href='#collapseAdmin' 
+                      role='button'>Administrador</li>
+                    <ul className='list-group-flush collapse' id='collapseAdmin'>
+                      <li
+                        className='list-group-item bg-dark text-white'
+                        role='button'
+                        onClick={() => handleClick('/gestionar-usuarios')}
+                      >Gestionar Usuarios</li>
+                    </ul>
+                </ul>
+              </div>
+            </div>
+            <div className='list-group list-group-flush mt-5'>
               <button className="btn btn-danger" type="button" onClick={handleLogout}>
                 <i className="fa-solid fa-power-off"></i>
               </button>
             </div>
           </div>
-          
-          {/*<nav className="navbar bg-white" style={{ height: '60px' }}>
-            <div className="container-fluid">
-              <img className='position-absolute top-50 start-50 translate-middle'
-                src='https://ceneris.com/wp-content/uploads/2021/05/logo-ceneris-300.png'
-                width="60%"
-                height="auto"
-                alt='Logo'/>
-            </div>
-          </nav>*/}
-          
-          <div className="h-100 bg-white border-end">
-            <ul className='list-group list-group-flush'>
-              <li className='list-group-item' data-bs-toggle="collapse" href='#collapseSoporte' role='button'>Soporte Técnico</li>
-                <ul className='list-group-flush collapse' id='collapseSoporte'>
-                  <li 
-                    className='list-group-item' 
-                    role='button'
-                    onClick={() => handleClick('/gestionar-equipos')}
-                  >Gestionar Equipos</li>
-                  <li 
-                    className='list-group-item'
-                    role='button'
-                    onClick={() => handleClick('/generar-diagnosticos')}
-                  >Generar Diagnósticos</li>
-                  <li 
-                    className='list-group-item'
-                    role='button'
-                    onClick={() => handleClick('/revisar-diagnosticos')}
-                  >Revisar Diagnósticos</li>
-                </ul>
-              <li className='list-group-item' data-bs-toggle="collapse" href='#collapseAlmacen' role='button'>Almacén</li>
-                <ul className='list-group-flush collapse' id='collapseAlmacen'>
-                  <li 
-                    className='list-group-item'
-                    role='button'
-                    onClick={() => handleClick('/gestionar-almacen')}
-                  >Gestionar Almacén</li>
-                </ul>
-              <li className='list-group-item' data-bs-toggle="collapse" href='#collapseAdmin' role='button'>Administrador</li>
-                <ul className='list-group-flush collapse' id='collapseAdmin'>
-                  <li
-                    className='list-group-item'
-                    role='button'
-                    onClick={() => handleClick('/gestionar-usuarios')}
-                  >Gestionar Usuarios</li>
-                </ul>
-            </ul>
-          </div>
-        </div>
-  
-        <div className='d-flex flex-column'>
-          <nav className="navbar bg-white">
-            <button
-              className="btn btn-danger"
-              type="button"
-              onClick={handleLogout}><i className="fa-solid fa-power-off"></i>
-            </button>
-          </nav>
-          <div className='p-3'>
+          <div className='col p-3'>
             <CompRoutes />
-          </div>
+          </div>     
         </div>
       </div>
     )

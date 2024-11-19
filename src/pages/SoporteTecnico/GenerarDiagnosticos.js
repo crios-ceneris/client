@@ -670,6 +670,7 @@ function GenerarDiagnosticos() {
             </Button>
           </Modal.Footer>
         </Modal>
+        
       </div>
   );
 };

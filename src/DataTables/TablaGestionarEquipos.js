@@ -9,13 +9,63 @@ function TablaGestionarEquipos() {
   const [rowData, setRowData] = useState({})
   const handleShow = () => setShow(true)
   const handleClose = () => setShow(false)
+
+  // Editar fila
   const handleEdit = (event) => {
     const row = parseInt(event.currentTarget.dataset.row, 10)
     const rowData = data.find((item) => item.id === row)
     setRowData(rowData)
     handleShow()
   }
-
+  // Guardar fila editada
+  const handleSaveEdit = async() => {
+    try {
+      const editRowData = await Axios.put(`http://localhost:3001/api/editar-equipo/${rowData.id}`,{
+        servicio: rowData.servicio,
+        numeroguia: rowData.numeroguia,
+        cliente: rowData.cliente,
+        serie: rowData.serie,
+        marca: rowData.marca,
+        equipo: rowData.equipo,
+        modelo: rowData.modelo,
+        accesorios: rowData.accesorios,
+        fecharecepcion: rowData.fecharecepcion,
+        prioridad: rowData.prioridad,
+        responsable: rowData.responsable,
+      })
+      if (editRowData.status === 200) {
+        handleClose()
+        Swal.fire({
+          position: "top-center",
+          icon: "success",
+          title: "Los cambios se han guardado",
+          showConfirmButton: false,
+          timer: 1000
+        })
+        fetchData()
+        setRowData(rowData)
+      }
+      else {
+        Swal.fire({
+          position: "top-center",
+          icon: "warning",
+          title: "No ha sido posible guardar los cambios",
+          showConfirmButton: false,
+          timer: 1000
+        })
+      }
+    } catch (error) {
+      Swal.fire({
+        position: "top-center",
+        icon: "errow",
+        title: "Oops... ocurrio un error!",
+        showConfirmButton: false,
+        timer: 1000
+      })
+      console.error('Error al guardar los cambios: ', error)
+    }
+  }
+  // Eliminar fila
   const handleDelete = (event) => {
     const rowId = parseInt(event.currentTarget.dataset.row, 10)
     Swal.fire({
@@ -29,40 +79,13 @@ function TablaGestionarEquipos() {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        const response = Axios.post(`http://localhost:3001/eliminar-equipo/${rowId}`)
+        const response = Axios.post(`http://localhost:3001/api/eliminar-equipo/${rowId}`)
         .then((response) => {
           console.log("Fila eliminada con éxito!")
         })
-        // Eliminar el equipo si el usuario confirma
-        /*fetch(`http://localhost:3001/api/eliminar-equipo/${rowId}`, {
-          method: 'DELETE',
-        })
-            .then(response => {
-              if (!response.ok) {
-                throw new Error('Hubo un problema al eliminar el equipo');
-              }
-              return response.json();
-            })
-            .then(data => {
-              console.log('Respuesta del servidor:', data);
-              if (data.message === 'Equipo eliminado correctamente') {
-                console.log('Equipo eliminado correctamente');
-                // Actualizar el estado equipoData excluyendo el equipo eliminado
-                setEquipoData(prevEquipoData => prevEquipoData.filter(equipo => equipo.id !== id));
-              } else {
-                console.error('Error al eliminar equipo:', data.message);
-                // Mostrar mensaje de error solo cuando hay un problema al eliminar el equipo
-                Swal.fire('Error', 'Hubo un problema al eliminar el equipo', 'error');
-              }
-            })
-            .catch(error => {
-              console.error('Error al eliminar equipo:', error);
-              // Mostrar un mensaje de error al usuario
-              Swal.fire('Error', 'Hubo un problema al eliminar el equipo', 'error');
-            });*/
       }
     });
-  };
+  }
 
   const columns = [
     {
@@ -149,7 +172,7 @@ function TablaGestionarEquipos() {
         </div>
       )
     },
-  ];
+  ]
 
   const tableStyles = {
     headRow:{
@@ -197,54 +220,6 @@ function TablaGestionarEquipos() {
       )
     } else {
       setFilter(data)
-    }
-  }
-
-  const handleSave = async() => {
-    try {
-      const editRowData = await Axios.put(`http://localhost:3001/api/editar-equipo/${rowData.id}`,{
-        servicio: rowData.servicio,
-        numeroguia: rowData.numeroguia,
-        cliente: rowData.cliente,
-        serie: rowData.serie,
-        marca: rowData.marca,
-        equipo: rowData.equipo,
-        modelo: rowData.modelo,
-        accesorios: rowData.accesorios,
-        fecharecepcion: rowData.fecharecepcion,
-        prioridad: rowData.prioridad,
-        responsable: rowData.responsable,
-      })
-      if (editRowData.status === 200) {
-        handleClose()
-        Swal.fire({
-          position: "top-center",
-          icon: "success",
-          title: "Los cambios se han guardado",
-          showConfirmButton: false,
-          timer: 1500
-        })
-        fetchData()
-        setRowData(rowData)
-      }
-      else {
-        Swal.fire({
-          position: "top-center",
-          icon: "warning",
-          title: "No ha sido posible guardar los cambios",
-          showConfirmButton: false,
-          timer: 1000
-        })
-      }
-    } catch (error) {
-      Swal.fire({
-        position: "top-center",
-        icon: "errow",
-        title: "Oops... ocurrio un error!",
-        showConfirmButton: false,
-        timer: 1000
-      })
-      console.error('Error al guardar los cambios: ', error)
     }
   }
 
@@ -461,7 +436,7 @@ function TablaGestionarEquipos() {
             <Button variant="danger" onClick={handleClose}>
               Cancelar
             </Button>
-            <Button variant="primary" type="submit" onClick={handleSave}>
+            <Button variant="primary" type="submit" onClick={handleSaveEdit}>
               Guardar
             </Button>
           </Modal.Footer>
