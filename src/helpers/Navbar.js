@@ -10,6 +10,8 @@ function NavbarComponent() {
   const navigate = useNavigate()
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isMenuCollapsed, setIsMenuCollapsed] = useState(false)
+  const [userData, setUserData] = useState(null)
+
   const handleLogout = async () => {
     try {
       Swal.fire({
@@ -45,6 +47,7 @@ function NavbarComponent() {
         })
         if (response.data.isAuthenticated) {
           setIsAuthenticated(true)
+          setUserData(response.data.userData)
         } else {
           navigate('/login')
         }
@@ -63,10 +66,17 @@ function NavbarComponent() {
     return (
       <div className='container m-0' style={{maxWidth: 'none'}}>
         <div className='row'>
+          {/*Left navbar */}
           <div className='col-2 bg-dark p-3'>
+            {/*Head Logo */}
             <div className="container-fluid d-flex justify-content-between align-items-center">
               <img className='logo' src={whiteLogo} width="80%" height="auto" alt='Logo' />
             </div>
+            {/*Data user */}
+            <div className='list-group list-group-flush'>
+              <h5 className='text-white'>{userData.name + ' ' + userData.surname}</h5>
+            </div>
+            {/*Menu navegation */}
             <div className='d-flex flex-column'>
               <div className="">
                 <ul className='list-group list-group-flush'>
@@ -116,12 +126,14 @@ function NavbarComponent() {
                 </ul>
               </div>
             </div>
+            {/*Logout button */}
             <div className='list-group list-group-flush mt-5'>
               <button className="btn btn-danger" type="button" onClick={handleLogout}>
                 <i className="fa-solid fa-power-off"></i>
               </button>
             </div>
           </div>
+          {/*Right main content */}
           <div className='col p-3'>
             <CompRoutes />
           </div>     
