@@ -15,6 +15,7 @@ function TablaGestionarEquipos() {
     const row = parseInt(event.currentTarget.dataset.row, 10)
     const rowData = data.find((item) => item.id === row)
     setRowData(rowData)
+    console.log(rowData.responsableName.id)
     handleShow()
   }
   // Guardar fila editada
@@ -22,14 +23,14 @@ function TablaGestionarEquipos() {
     try {
       const editRowData = await Axios.put(`http://localhost:3001/api/editar-equipo/${rowData.id}`,{
         servicio: rowData.servicio,
-        numeroguia: rowData.numeroguia,
+        numeroGuia: rowData.numeroGuia,
         cliente: rowData.cliente,
         serie: rowData.serie,
         marca: rowData.marca,
         equipo: rowData.equipo,
         modelo: rowData.modelo,
         accesorios: rowData.accesorios,
-        fecharecepcion: rowData.fecharecepcion,
+        fechaRecepcion: rowData.fechaRecepcion,
         prioridad: rowData.prioridad,
         responsable: rowData.responsable,
       })
@@ -110,7 +111,7 @@ function TablaGestionarEquipos() {
     },
     {
       name: '#Guía',
-      selector: row => row.numeroguia,
+      selector: row => row.numeroGuia,
       width: '80px',
       wrap: true,
     },
@@ -144,7 +145,7 @@ function TablaGestionarEquipos() {
     },
     {
       name: 'F. Recepción',
-      selector: row => row.fecharecepcion,
+      selector: row => row.fechaRecepcion,
       wrap: true,
     },
     {
@@ -232,6 +233,7 @@ function TablaGestionarEquipos() {
       console.error('Error al obtener datos', error)
     }
   }
+
   const fetchUserData = async() => {
     try {
       const dataUsers = await Axios.get('http://localhost:3001/api/users-names-data')
@@ -292,11 +294,11 @@ function TablaGestionarEquipos() {
                     <Form.Label>#Guía:</Form.Label>
                     <Form.Control
                         type="text"
-                        name="numeroguia"
-                        value={rowData.numeroguia}
+                        name="numeroGuia"
+                        value={rowData.numeroGuia}
                         onChange={(e) => setRowData((prevState) => ({
                           ...prevState,
-                          numeroguia: e.target.value,
+                          numeroGuia: e.target.value,
                         }))}/>
                   </Form.Group>
                 </div>
@@ -388,10 +390,10 @@ function TablaGestionarEquipos() {
                   <Form.Group className="mb-3">
                   <Form.Label>Fecha Recepcion:</Form.Label>
                   <Form.Control type="date"
-                    value={rowData.fecharecepcion}
+                    value={rowData.fechaRecepcion}
                     onChange={(e) => setRowData((prevState) => ({
                       ...prevState,
-                      fecharecepcion: e.target.value,
+                      fechaRecepcion: e.target.value,
                     }))}/>
                 </Form.Group>
                 </div>
@@ -424,7 +426,7 @@ function TablaGestionarEquipos() {
                       }))}>
                       <option value="">Seleccione</option>
                       {dataUsers.map(item => (
-                        <option value={item}>{item}</option>
+                        <option key={item.id} value={item.id}>{item.fullName}</option>
                       ))}
                   </Form.Select>
                 </Form.Group>
